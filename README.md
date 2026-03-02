@@ -4,7 +4,7 @@ A ticket support system built with Rails 8, GraphQL, and ActionCable.
 
 ## Requirements
 
-- Ruby 3.2.8
+- Ruby 3.3.7
 - PostgreSQL
 - Node.js (for JavaScript bundling)
 
