@@ -28,6 +28,26 @@ export function createTicketSubscription(ticketId, onUpdate) {
   };
 }
 
+export function createNotificationSubscription(onNotification) {
+  const token = localStorage.getItem("token");
+  const url = token ? `${getCableUrl()}?token=${encodeURIComponent(token)}` : getCableUrl();
+  const cable = createConsumer(url);
+
+  const subscription = cable.subscriptions.create(
+    { channel: "NotificationChannel" },
+    {
+      received(data) {
+        onNotification(data);
+      },
+    }
+  );
+
+  return () => {
+    subscription.unsubscribe();
+    cable.disconnect();
+  };
+}
+
 export function createInboxSubscription(onUpdate) {
   const token = localStorage.getItem("token");
   const url = token ? `${getCableUrl()}?token=${encodeURIComponent(token)}` : getCableUrl();

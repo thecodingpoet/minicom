@@ -68,4 +68,52 @@ RSpec.describe Comment, type: :model do
       create(:comment, ticket: ticket, user: customer)
     end
   end
+
+  describe "create_notification callback" do
+    before do
+      allow(TicketChannel).to receive(:broadcast_to)
+      allow(NotificationChannel).to receive(:broadcast_to)
+    end
+
+    it "notifies customer when agent comments" do
+      ticket = create(:ticket)
+      agent = create(:user, :agent)
+
+      expect {
+        create(:comment, ticket: ticket, user: agent)
+      }.to change { Notification.count }.by(1)
+
+      notification = Notification.last
+      expect(notification.recipient).to eq(ticket.customer)
+      expect(notification.actor).to eq(agent)
+      expect(notification.action).to eq("new_comment")
+      expect(notification.notifiable_type).to eq("Comment")
+    end
+
+    it "notifies assigned agent when customer comments" do
+      agent = create(:user, :agent)
+      ticket = create(:ticket, :with_agent_comment, assigned_agent: agent)
+      customer = ticket.customer
+
+      expect {
+        create(:comment, ticket: ticket, user: customer)
+      }.to change { Notification.count }.by(1)
+
+      notification = Notification.last
+      expect(notification.recipient).to eq(agent)
+      expect(notification.actor).to eq(customer)
+      expect(notification.action).to eq("new_comment")
+    end
+
+    it "does not create notification when customer comments on unassigned ticket" do
+      ticket = create(:ticket, :with_agent_comment, assigned_agent_id: nil)
+      customer = ticket.customer
+
+      # The :with_agent_comment trait already created a notification.
+      # A customer comment on an unassigned ticket should not create another.
+      expect {
+        create(:comment, ticket: ticket, user: customer)
+      }.not_to change { customer.notifications.count }
+    end
+  end
 end

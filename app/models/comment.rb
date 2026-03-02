@@ -7,6 +7,7 @@ class Comment < ApplicationRecord
 
   after_create :claim_ticket_if_agent
   after_commit :broadcast_ticket_update, on: :create
+  after_commit :create_notification, on: :create
 
   private
 
@@ -26,5 +27,26 @@ class Comment < ApplicationRecord
   def claim_ticket_if_agent
     return unless user.agent?
     ticket.claim!(user)
+  end
+
+  def create_notification
+    return unless notification_recipient
+
+    Notification.create!(
+      recipient: notification_recipient,
+      actor: user,
+      notifiable: self,
+      action: "new_comment"
+    )
+  rescue StandardError => e
+    Rails.logger.error("Comment notification failed: #{e.message}")
+  end
+
+  def notification_recipient
+    if user.agent?
+      ticket.customer
+    elsif ticket.assigned_agent.present?
+      ticket.assigned_agent
+    end
   end
 end

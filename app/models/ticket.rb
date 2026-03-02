@@ -10,6 +10,7 @@ class Ticket < ApplicationRecord
 
   after_commit :broadcast_inbox, on: :create
   after_update :broadcast_ticket
+  after_update :notify_customer_on_close
 
   scope :assigned, -> { where.not(assigned_agent_id: nil) }
   scope :unassigned, -> { where(assigned_agent_id: nil) }
@@ -36,5 +37,19 @@ class Ticket < ApplicationRecord
     TicketChannel.broadcast_to(self, { type: "update" })
   rescue StandardError => e
     Rails.logger.error("TicketChannel broadcast failed: #{e.message}")
+  end
+
+  def notify_customer_on_close
+    return unless saved_change_to_status? && closed?
+    return unless assigned_agent.present?
+
+    Notification.create!(
+      recipient: customer,
+      actor: assigned_agent,
+      notifiable: self,
+      action: "ticket_closed"
+    )
+  rescue StandardError => e
+    Rails.logger.error("Ticket close notification failed: #{e.message}")
   end
 end

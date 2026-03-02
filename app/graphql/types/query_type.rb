@@ -58,5 +58,25 @@ module Types
 
       User.agent
     end
+
+    field :notifications, [Types::NotificationType], null: false do
+      argument :unread_only, Boolean, required: false
+    end
+
+    def notifications(unread_only: false)
+      raise GraphQL::ExecutionError, "Authentication required" unless context[:current_user]
+
+      scope = context[:current_user].notifications.recent
+      scope = scope.unread if unread_only
+      scope.includes(:actor, :notifiable)
+    end
+
+    field :unread_notifications_count, Integer, null: false
+
+    def unread_notifications_count
+      raise GraphQL::ExecutionError, "Authentication required" unless context[:current_user]
+
+      context[:current_user].notifications.unread.count
+    end
   end
 end

@@ -131,4 +131,43 @@ RSpec.describe Ticket, type: :model do
       ticket.update!(subject: "Updated subject")
     end
   end
+
+  describe "notify_customer_on_close" do
+    before do
+      allow(ActionCable.server).to receive(:broadcast)
+      allow(TicketChannel).to receive(:broadcast_to)
+      allow(NotificationChannel).to receive(:broadcast_to)
+    end
+
+    it "creates notification for customer when ticket is closed with assigned agent" do
+      agent = create(:user, :agent)
+      ticket = create(:ticket, :assigned, assigned_agent: agent)
+
+      expect {
+        ticket.update!(status: :closed)
+      }.to change { Notification.count }.by(1)
+
+      notification = Notification.last
+      expect(notification.recipient).to eq(ticket.customer)
+      expect(notification.actor).to eq(agent)
+      expect(notification.action).to eq("ticket_closed")
+      expect(notification.notifiable).to eq(ticket)
+    end
+
+    it "does not create notification when ticket is closed without assigned agent" do
+      ticket = create(:ticket, assigned_agent_id: nil)
+
+      expect {
+        ticket.update!(status: :closed)
+      }.not_to change { Notification.count }
+    end
+
+    it "does not create notification when status changes to in_progress" do
+      ticket = create(:ticket, :assigned)
+
+      expect {
+        ticket.update!(status: :in_progress)
+      }.not_to change { Notification.count }
+    end
+  end
 end

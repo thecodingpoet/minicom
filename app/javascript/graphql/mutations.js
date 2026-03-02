@@ -114,3 +114,24 @@ export const EXPORT_CLOSED_TICKETS = gql`
     }
   }
 `;
+
+export const MARK_NOTIFICATION_AS_READ = gql`
+  mutation MarkNotificationAsRead($notificationId: ID!) {
+    markNotificationAsRead(input: { notificationId: $notificationId }) {
+      notification {
+        id
+        readAt
+      }
+      errors
+    }
+  }
+`;
+
+export const MARK_ALL_NOTIFICATIONS_AS_READ = gql`
+  mutation MarkAllNotificationsAsRead {
+    markAllNotificationsAsRead(input: {}) {
+      updatedCount
+      errors
+    }
+  }
+`;

@@ -67,3 +67,26 @@ export const GET_AGENTS = gql`
     }
   }
 `;
+
+export const GET_NOTIFICATIONS = gql`
+  query GetNotifications($unreadOnly: Boolean) {
+    notifications(unreadOnly: $unreadOnly) {
+      id
+      action
+      actor {
+        id
+        fullName
+      }
+      ticketId
+      ticketSubject
+      readAt
+      createdAt
+    }
+  }
+`;
+
+export const GET_UNREAD_NOTIFICATIONS_COUNT = gql`
+  query GetUnreadNotificationsCount {
+    unreadNotificationsCount
+  }
+`;

@@ -1,6 +1,7 @@
 import { useAuth } from "../utils/auth";
 import { useNavigate, useLocation, Outlet, Link } from "react-router-dom";
 import UserMenu from "./UserMenu";
+import NotificationBell from "./NotificationBell";
 
 export default function Layout() {
   const { user } = useAuth();
@@ -34,7 +35,10 @@ export default function Layout() {
             </nav>
           )}
         </div>
-        <UserMenu />
+        <div className="flex items-center gap-1">
+          <NotificationBell />
+          <UserMenu />
+        </div>
       </header>
       <main className="flex-1 w-full max-w-[1080px] mx-auto px-6 py-7">
         <Outlet />
