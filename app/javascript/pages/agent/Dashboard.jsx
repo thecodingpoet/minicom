@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@apollo/client/react";
 import { GET_TICKETS } from "../../graphql/queries";
 import TicketCard from "../../components/TicketCard";
@@ -6,6 +6,24 @@ import TicketCard from "../../components/TicketCard";
 export default function AgentDashboard() {
   const [statusFilter, setStatusFilter] = useState("");
   const [assignmentFilter, setAssignmentFilter] = useState("");
+  const statusRef = useRef(null);
+  const assignRef = useRef(null);
+
+  useEffect(() => {
+    const statusEl = statusRef.current;
+    const assignEl = assignRef.current;
+
+    const onStatusChange = (e) => setStatusFilter(e.target.value);
+    const onAssignChange = (e) => setAssignmentFilter(e.target.value);
+
+    if (statusEl) statusEl.addEventListener("sl-change", onStatusChange);
+    if (assignEl) assignEl.addEventListener("sl-change", onAssignChange);
+
+    return () => {
+      if (statusEl) statusEl.removeEventListener("sl-change", onStatusChange);
+      if (assignEl) assignEl.removeEventListener("sl-change", onAssignChange);
+    };
+  }, []);
 
   const { data, loading, error } = useQuery(GET_TICKETS, {
     variables: {
@@ -49,9 +67,9 @@ export default function AgentDashboard() {
 
       <div className="filters">
         <sl-select
+          ref={statusRef}
           label="Status"
           value={statusFilter}
-          onSlChange={(e) => setStatusFilter(e.target.value)}
           clearable
           style={{ maxWidth: "180px" }}
         >
@@ -61,9 +79,9 @@ export default function AgentDashboard() {
         </sl-select>
 
         <sl-select
+          ref={assignRef}
           label="Assignment"
           value={assignmentFilter}
-          onSlChange={(e) => setAssignmentFilter(e.target.value)}
           clearable
           style={{ maxWidth: "180px" }}
         >

@@ -5,8 +5,6 @@ import { SIGN_IN } from "../graphql/mutations";
 import { useAuth } from "../utils/auth";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -16,6 +14,10 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    const form = e.target;
+    const email = form.querySelector('[name="email"]').value;
+    const password = form.querySelector('[name="password"]').value;
 
     try {
       const { data } = await signIn({ variables: { email, password } });
@@ -45,16 +47,14 @@ export default function Login() {
         <form onSubmit={handleSubmit}>
           <sl-input
             label="Email"
+            name="email"
             type="email"
-            value={email}
-            onSlInput={(e) => setEmail(e.target.value)}
             required
           />
           <sl-input
             label="Password"
+            name="password"
             type="password"
-            value={password}
-            onSlInput={(e) => setPassword(e.target.value)}
             required
           />
           <sl-button

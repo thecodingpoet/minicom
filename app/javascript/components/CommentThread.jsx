@@ -1,17 +1,16 @@
-import { useState } from "react";
 import { useMutation } from "@apollo/client/react";
 import { CREATE_COMMENT } from "../graphql/mutations";
 import { GET_TICKET } from "../graphql/queries";
 
 export default function CommentThread({ comments, ticketId, canComment }) {
-  const [body, setBody] = useState("");
-
   const [createComment, { loading }] = useMutation(CREATE_COMMENT, {
     refetchQueries: [{ query: GET_TICKET, variables: { id: ticketId } }],
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const textarea = e.target.querySelector('[name="body"]');
+    const body = textarea.value;
     if (!body.trim()) return;
 
     try {
@@ -19,7 +18,7 @@ export default function CommentThread({ comments, ticketId, canComment }) {
         variables: { ticketId, body },
       });
       if (data.createComment.errors.length === 0) {
-        setBody("");
+        textarea.value = "";
       } else {
         alert(data.createComment.errors.join(", "));
       }
@@ -59,13 +58,7 @@ export default function CommentThread({ comments, ticketId, canComment }) {
 
       {canComment && (
         <form onSubmit={handleSubmit} className="comment-form">
-          <sl-textarea
-            label="Add a comment"
-            value={body}
-            onSlInput={(e) => setBody(e.target.value)}
-            rows={3}
-            required
-          />
+          <sl-textarea label="Add a comment" name="body" rows={3} required />
           <sl-button type="submit" variant="primary" loading={loading || undefined}>
             Post Comment
           </sl-button>

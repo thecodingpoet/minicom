@@ -5,28 +5,27 @@ import { SIGN_UP } from "../graphql/mutations";
 import { useAuth } from "../utils/auth";
 
 export default function SignUp() {
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    passwordConfirmation: "",
-  });
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const [signUp, { loading }] = useMutation(SIGN_UP);
 
-  const update = (field) => (e) =>
-    setForm((prev) => ({ ...prev, [field]: e.target.value }));
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
+    const form = e.target;
+    const variables = {
+      firstName: form.querySelector('[name="firstName"]').value,
+      lastName: form.querySelector('[name="lastName"]').value,
+      email: form.querySelector('[name="email"]').value,
+      password: form.querySelector('[name="password"]').value,
+      passwordConfirmation: form.querySelector('[name="passwordConfirmation"]').value,
+    };
+
     try {
-      const { data } = await signUp({ variables: form });
+      const { data } = await signUp({ variables });
       const result = data.signUp;
 
       if (result.errors.length > 0) {
@@ -52,38 +51,15 @@ export default function SignUp() {
         )}
         <form onSubmit={handleSubmit}>
           <div className="form-row">
-            <sl-input
-              label="First Name"
-              value={form.firstName}
-              onSlInput={update("firstName")}
-              required
-            />
-            <sl-input
-              label="Last Name"
-              value={form.lastName}
-              onSlInput={update("lastName")}
-              required
-            />
+            <sl-input label="First Name" name="firstName" required />
+            <sl-input label="Last Name" name="lastName" required />
           </div>
-          <sl-input
-            label="Email"
-            type="email"
-            value={form.email}
-            onSlInput={update("email")}
-            required
-          />
-          <sl-input
-            label="Password"
-            type="password"
-            value={form.password}
-            onSlInput={update("password")}
-            required
-          />
+          <sl-input label="Email" name="email" type="email" required />
+          <sl-input label="Password" name="password" type="password" required />
           <sl-input
             label="Confirm Password"
+            name="passwordConfirmation"
             type="password"
-            value={form.passwordConfirmation}
-            onSlInput={update("passwordConfirmation")}
             required
           />
           <sl-button

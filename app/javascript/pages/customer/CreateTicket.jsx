@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { CREATE_TICKET } from "../../graphql/mutations";
 
 export default function CreateTicket() {
-  const [subject, setSubject] = useState("");
-  const [description, setDescription] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -14,6 +12,10 @@ export default function CreateTicket() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    const form = e.target;
+    const subject = form.querySelector('[name="subject"]').value;
+    const description = form.querySelector('[name="description"]').value;
 
     try {
       const { data } = await createTicket({
@@ -42,19 +44,8 @@ export default function CreateTicket() {
       )}
       <sl-card>
         <form onSubmit={handleSubmit}>
-          <sl-input
-            label="Subject"
-            value={subject}
-            onSlInput={(e) => setSubject(e.target.value)}
-            required
-          />
-          <sl-textarea
-            label="Description"
-            value={description}
-            onSlInput={(e) => setDescription(e.target.value)}
-            rows={6}
-            required
-          />
+          <sl-input label="Subject" name="subject" required />
+          <sl-textarea label="Description" name="description" rows={6} required />
           <div className="form-actions">
             <sl-button variant="default" onClick={() => navigate("/")}>
               Cancel

@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { GET_TICKET, GET_AGENTS } from "../../graphql/queries";
@@ -20,6 +21,8 @@ const statusLabel = {
 export default function AgentTicketDetail() {
   const { id } = useParams();
   const { user } = useAuth();
+  const statusRef = useRef(null);
+  const assignRef = useRef(null);
 
   const { data, loading, error } = useQuery(GET_TICKET, {
     variables: { id },
@@ -36,6 +39,46 @@ export default function AgentTicketDetail() {
     refetchQueries: [{ query: GET_TICKET, variables: { id } }],
   });
 
+  useEffect(() => {
+    const statusEl = statusRef.current;
+    const assignEl = assignRef.current;
+
+    const handleStatusChange = async (e) => {
+      try {
+        const { data } = await updateStatus({
+          variables: { ticketId: id, status: e.target.value },
+        });
+        if (data.updateTicketStatus.errors.length > 0) {
+          alert(data.updateTicketStatus.errors.join(", "));
+        }
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
+    const handleAssignChange = async (e) => {
+      const agentId = e.target.value || null;
+      try {
+        const { data } = await assignTicket({
+          variables: { ticketId: id, agentId },
+        });
+        if (data.assignTicket.errors.length > 0) {
+          alert(data.assignTicket.errors.join(", "));
+        }
+      } catch (err) {
+        alert(err.message);
+      }
+    };
+
+    if (statusEl) statusEl.addEventListener("sl-change", handleStatusChange);
+    if (assignEl) assignEl.addEventListener("sl-change", handleAssignChange);
+
+    return () => {
+      if (statusEl) statusEl.removeEventListener("sl-change", handleStatusChange);
+      if (assignEl) assignEl.removeEventListener("sl-change", handleAssignChange);
+    };
+  });
+
   if (loading) return <sl-spinner style={{ fontSize: "2rem" }} />;
   if (error) return <sl-alert variant="danger" open>{error.message}</sl-alert>;
 
@@ -43,33 +86,6 @@ export default function AgentTicketDetail() {
   if (!ticket) return <p>Ticket not found.</p>;
 
   const agents = agentsData?.agents || [];
-
-  const handleStatusChange = async (e) => {
-    try {
-      const { data } = await updateStatus({
-        variables: { ticketId: ticket.id, status: e.target.value },
-      });
-      if (data.updateTicketStatus.errors.length > 0) {
-        alert(data.updateTicketStatus.errors.join(", "));
-      }
-    } catch (err) {
-      alert(err.message);
-    }
-  };
-
-  const handleAssign = async (e) => {
-    const agentId = e.target.value || null;
-    try {
-      const { data } = await assignTicket({
-        variables: { ticketId: ticket.id, agentId },
-      });
-      if (data.assignTicket.errors.length > 0) {
-        alert(data.assignTicket.errors.join(", "));
-      }
-    } catch (err) {
-      alert(err.message);
-    }
-  };
 
   const handleAssignToMe = async () => {
     try {
@@ -98,17 +114,16 @@ export default function AgentTicketDetail() {
         </div>
       </sl-card>
 
-      {!ticket.status !== "closed" && (
+      {ticket.status !== "closed" && (
         <div className="agent-controls">
           <sl-card>
             <h3>Manage Ticket</h3>
             <div className="controls-row">
               <sl-select
+                ref={statusRef}
                 label="Status"
                 value={ticket.status}
-                onSlChange={handleStatusChange}
                 style={{ maxWidth: "200px" }}
-                disabled={ticket.status === "closed" || undefined}
               >
                 <sl-option value="open">Open</sl-option>
                 <sl-option value="in_progress">In Progress</sl-option>
@@ -116,9 +131,9 @@ export default function AgentTicketDetail() {
               </sl-select>
 
               <sl-select
+                ref={assignRef}
                 label="Assign to Agent"
                 value={ticket.assignedAgent?.id || ""}
-                onSlChange={handleAssign}
                 clearable
                 style={{ maxWidth: "250px" }}
               >
