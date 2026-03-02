@@ -14,7 +14,7 @@ RSpec.describe DailyTicketReminderJob, type: :job do
     }.to change { ActionMailer::Base.deliveries.size }.by(1)
 
     mail = ActionMailer::Base.deliveries.last
-    expect(mail.to).to eq([agent.email])
+    expect(mail.to).to eq([ agent.email ])
     expect(mail.subject).to eq("Daily Open Tickets Reminder")
   end
 
@@ -27,7 +27,7 @@ RSpec.describe DailyTicketReminderJob, type: :job do
     }.to change { ActionMailer::Base.deliveries.size }.by(1)
 
     mail = ActionMailer::Base.deliveries.last
-    expect(mail.to).to eq([agent.email])
+    expect(mail.to).to eq([ agent.email ])
   end
 
   it "does nothing when no open tickets" do

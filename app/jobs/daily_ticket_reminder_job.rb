@@ -2,7 +2,7 @@ class DailyTicketReminderJob < ApplicationJob
   queue_as :default
 
   def perform
-    open_tickets = Ticket.where(status: [:open, :in_progress]).includes(:customer, :assigned_agent)
+    open_tickets = Ticket.where(status: [ :open, :in_progress ]).includes(:customer, :assigned_agent)
     return if open_tickets.empty?
 
     User.agent.find_each do |agent|

@@ -7,10 +7,10 @@ module Mutations
 
     argument :subject, String, required: true
     argument :description, String, required: true
-    argument :attachments, [ApolloUploadServer::Upload], required: false
+    argument :attachments, [ ApolloUploadServer::Upload ], required: false
 
     field :ticket, Types::TicketType, null: true
-    field :errors, [String], null: false
+    field :errors, [ String ], null: false
 
     def resolve(subject:, description:, attachments: [])
       raise GraphQL::ExecutionError, "Authentication required" unless context[:current_user]

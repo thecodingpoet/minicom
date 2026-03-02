@@ -9,7 +9,7 @@ RSpec.describe TicketMailer, type: :mailer do
     let(:mail) { described_class.daily_reminder(agent, tickets) }
 
     it "sends to the agent's email" do
-      expect(mail.to).to eq([agent.email])
+      expect(mail.to).to eq([ agent.email ])
     end
 
     it "has the correct subject" do

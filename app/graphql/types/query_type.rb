@@ -6,7 +6,7 @@ module Types
       context[:current_user]
     end
 
-    field :tickets, [Types::TicketType], null: false do
+    field :tickets, [ Types::TicketType ], null: false do
       argument :status, String, required: false
       argument :assignment, String, required: false
     end
@@ -50,7 +50,7 @@ module Types
       ticket
     end
 
-    field :agents, [Types::UserType], null: false
+    field :agents, [ Types::UserType ], null: false
 
     def agents
       raise GraphQL::ExecutionError, "Authentication required" unless context[:current_user]

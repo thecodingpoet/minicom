@@ -4,7 +4,7 @@ module Mutations
     argument :agent_id, ID, required: false
 
     field :ticket, Types::TicketType, null: true
-    field :errors, [String], null: false
+    field :errors, [ String ], null: false
 
     def resolve(ticket_id:, agent_id: nil)
       raise GraphQL::ExecutionError, "Authentication required" unless context[:current_user]

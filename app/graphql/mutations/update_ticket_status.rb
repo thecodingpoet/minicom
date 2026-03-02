@@ -4,7 +4,7 @@ module Mutations
     argument :status, String, required: true
 
     field :ticket, Types::TicketType, null: true
-    field :errors, [String], null: false
+    field :errors, [ String ], null: false
 
     VALID_STATUSES = %w[open in_progress closed].freeze
 
