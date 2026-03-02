@@ -59,7 +59,7 @@ export default function UserMenu() {
         <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
           <div
             className={`px-4 pb-4 border-b border-gray-100 ${user.role !== "agent" ? "pt-3" : ""}`}
-            style={{ paddingTop: user.role === "agent" ? 50 : 10 }}
+            style={{ paddingTop: 10 }}
           >
             <div className="text-sm font-semibold text-gray-900">{user.fullName}</div>
             <div className="text-xs text-gray-500 mt-1">{user.email}</div>

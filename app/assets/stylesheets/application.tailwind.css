@@ -3,9 +3,9 @@
 @theme {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-  --color-accent: #635bff;
-  --color-accent-light: #ededfc;
-  --color-accent-hover: #5046e5;
+  --color-accent: #fc6435;
+  --color-accent-light: #ffefe9;
+  --color-accent-hover: #e55a2a;
 }
 
 @layer base {

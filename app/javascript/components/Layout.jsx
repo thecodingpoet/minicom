@@ -17,9 +17,6 @@ export default function Layout() {
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => navigate(user?.role === "agent" ? "/agent" : "/")}
           >
-            <div className="w-7 h-7 bg-accent rounded-md flex items-center justify-center text-white text-sm font-bold">
-              M
-            </div>
             <span className="text-lg font-bold text-accent tracking-tight">Minicom</span>
           </div>
           {user?.role === "agent" && (

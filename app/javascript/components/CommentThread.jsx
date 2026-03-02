@@ -66,11 +66,16 @@ export default function CommentThread({ comments, ticketId, canComment, currentU
                   {comment.user.fullName}
                 </span>
                 <div
-                  className={`px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words ${
+                  className={`px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words rounded-[18px] ${
                     isAgent
-                      ? "bg-accent text-white rounded-[18px] rounded-br-md"
-                      : "bg-gray-100 text-gray-900 rounded-[18px] rounded-bl-md"
+                      ? "rounded-br-md"
+                      : "rounded-bl-md bg-gray-100 text-gray-900 border border-gray-200"
                   }`}
+                  style={
+                    isAgent
+                      ? { backgroundColor: "#e0f2fe", color: "#1e293b", border: "1px solid #bae6fd" }
+                      : undefined
+                  }
                 >
                   {comment.body}
                 </div>

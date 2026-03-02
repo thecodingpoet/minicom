@@ -41,7 +41,7 @@ export default function SignUp() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-6 bg-gradient-to-br from-gray-50 via-indigo-50/50 to-purple-50/30">
+    <div className="flex items-center justify-center min-h-screen p-6 bg-gradient-to-br from-gray-50 via-orange-50/50 to-amber-50/30">
       <div className="w-full max-w-[400px] bg-white rounded-2xl p-10 shadow-lg border border-gray-100">
         <div className="text-center mb-8">
           <div className="w-12 h-12 bg-accent rounded-xl inline-flex items-center justify-center text-white text-[22px] font-bold mb-4">
