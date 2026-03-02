@@ -14,7 +14,7 @@ A ticket support system built with Rails 8, GraphQL, and ActionCable.
 
    ```bash
    bundle install
-   yarn install
+   npm install
    ```
 
 2. **Create and setup the database**

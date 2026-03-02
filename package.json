@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@apollo/client": "^4.1.6",
-    "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.23",
     "@rails/actioncable": "^8.1.200",
     "apollo-upload-client": "^19.0.0",
