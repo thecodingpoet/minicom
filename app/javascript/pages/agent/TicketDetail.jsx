@@ -1,17 +1,28 @@
-import { useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { GET_TICKET } from "../../graphql/queries";
-import { UPDATE_TICKET_STATUS } from "../../graphql/mutations";
+import { UPDATE_TICKET_STATUS, CREATE_COMMENT } from "../../graphql/mutations";
 import { StatusPill } from "../../components/StatusDot";
 import Avatar from "../../components/Avatar";
-import CommentThread from "../../components/CommentThread";
 import AttachmentStrip from "../../components/AttachmentStrip";
 import Spinner from "../../components/Spinner";
 import { createTicketSubscription } from "../../utils/actionCable";
 
+function formatTime(dateStr) {
+  return new Date(dateStr).toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 export default function AgentTicketDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [replyBody, setReplyBody] = useState("");
+  const scrollRef = useRef(null);
 
   const { data, loading, error, refetch } = useQuery(GET_TICKET, {
     variables: { id },
@@ -26,11 +37,46 @@ export default function AgentTicketDetail() {
     refetchQueries: [{ query: GET_TICKET, variables: { id } }],
   });
 
-  if (loading) return <Spinner />;
-  if (error) return <div className="bg-red-50 text-red-500 px-3.5 py-2.5 rounded-lg text-[13px] font-medium">{error.message}</div>;
+  const [createComment, { loading: sending }] = useMutation(CREATE_COMMENT, {
+    refetchQueries: [{ query: GET_TICKET, variables: { id } }],
+  });
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [data?.ticket?.comments?.length]);
+
+  useEffect(() => {
+    setReplyBody("");
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-5">
+        <div className="bg-red-50 text-red-500 px-3.5 py-2.5 rounded-lg text-[13px] font-medium">
+          {error.message}
+        </div>
+      </div>
+    );
+  }
 
   const ticket = data?.ticket;
-  if (!ticket) return <p>Ticket not found.</p>;
+  if (!ticket) {
+    return (
+      <div className="flex-1 flex items-center justify-center text-gray-400 text-sm">
+        Ticket not found
+      </div>
+    );
+  }
 
   const handleMarkResolved = async () => {
     try {
@@ -45,61 +91,142 @@ export default function AgentTicketDetail() {
     }
   };
 
-  return (
-    <div className="flex flex-col gap-5">
-      <Link to="/agent" className="inline-flex items-center gap-1 text-[13px] font-medium text-gray-500 hover:text-accent no-underline">
-        ← Back to inbox
-      </Link>
+  const handleSendReply = async (e) => {
+    e.preventDefault();
+    if (!replyBody.trim()) return;
+    try {
+      const { data } = await createComment({
+        variables: { ticketId: ticket.id, body: replyBody },
+      });
+      if (data.createComment.errors.length === 0) {
+        setReplyBody("");
+      } else {
+        alert(data.createComment.errors.join(", "));
+      }
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
-      <div className="flex items-start justify-between gap-4">
-        <h2 className="text-xl font-bold leading-snug">{ticket.subject}</h2>
-        <StatusPill status={ticket.status} />
+  return (
+    <div className="flex flex-col h-full bg-white">
+      {/* Header bar */}
+      <div className="shrink-0 border-b border-gray-200 px-5 py-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1 min-w-0">
+            <button
+              onClick={() => navigate("/agent")}
+              className="md:hidden inline-flex items-center gap-1 text-[13px] font-medium text-gray-500 hover:text-accent mb-2 cursor-pointer border-none bg-transparent p-0"
+            >
+              ← Back
+            </button>
+            <h2 className="text-base font-bold leading-snug truncate">{ticket.subject}</h2>
+            <div className="flex items-center gap-2 mt-1 flex-wrap">
+              <Avatar name={ticket.customer.fullName} size="xs" />
+              <span className="text-[13px] text-gray-500">{ticket.customer.fullName}</span>
+              <span className="text-[13px] text-gray-300">&middot;</span>
+              <span className="text-[13px] text-gray-400">{ticket.customer.email}</span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <StatusPill status={ticket.status} />
+            {ticket.status !== "closed" && (
+              <button
+                onClick={handleMarkResolved}
+                className="bg-accent hover:bg-accent-hover text-white font-semibold px-3 py-1.5 rounded-lg text-[13px] transition whitespace-nowrap"
+              >
+                Resolve
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-[1fr_300px] gap-5 items-start max-md:grid-cols-1">
-        {/* Main content */}
-        <div className="flex flex-col gap-5">
-          <div className="bg-white border border-gray-200 rounded-2xl p-5">
-            <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">{ticket.description}</p>
-            <div className="flex gap-5 mt-4 pt-4 border-t border-gray-100 text-[13px] text-gray-500">
-              <span>Created {new Date(ticket.createdAt).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</span>
-            </div>
-            <AttachmentStrip attachments={ticket.attachments} />
+      {/* Scrollable conversation area */}
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-5">
+        {/* Original ticket description */}
+        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-5">
+          <p className="text-sm text-gray-900 leading-relaxed whitespace-pre-wrap">
+            {ticket.description}
+          </p>
+          <div className="flex gap-4 mt-3 pt-3 border-t border-gray-100 text-[12px] text-gray-400">
+            <span>
+              Created{" "}
+              {new Date(ticket.createdAt).toLocaleDateString(undefined, {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </span>
           </div>
-
-          <CommentThread
-            comments={ticket.comments}
-            ticketId={ticket.id}
-            canComment={true}
-            currentUserRole="agent"
-          />
+          <AttachmentStrip attachments={ticket.attachments} />
         </div>
 
-        {/* Sidebar */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-5 flex flex-col gap-4 sticky top-[76px] max-md:static">
-          <h3 className="text-[13px] font-semibold uppercase tracking-wider text-gray-400 -mb-1">
-            Details
-          </h3>
-
-          <div className="flex items-center gap-2.5 py-2.5">
-            <Avatar name={ticket.customer.fullName} size="md" />
-            <div className="text-[13px]">
-              <strong className="block font-semibold">{ticket.customer.fullName}</strong>
-              <span className="text-gray-500 text-xs">{ticket.customer.email}</span>
+        {/* Conversation messages */}
+        <div className="flex flex-col gap-4">
+          {ticket.comments.length === 0 && (
+            <div className="text-center py-6 text-gray-400 text-[13px]">
+              No replies yet. Start the conversation!
             </div>
-          </div>
-
-          <hr className="border-t border-gray-100 m-0" />
-
-          {ticket.status !== "closed" && (
-            <button
-              onClick={handleMarkResolved}
-              className="w-full bg-accent hover:bg-accent-hover text-white font-semibold px-3 py-2 rounded-lg text-sm transition"
-            >
-              Mark as resolved
-            </button>
           )}
+          {ticket.comments.map((comment) => {
+            const isAgent = comment.user.role === "agent";
+            return (
+              <div
+                key={comment.id}
+                className={`flex gap-2.5 max-w-[80%] ${
+                  isAgent ? "self-end flex-row-reverse" : "self-start"
+                }`}
+              >
+                <Avatar name={comment.user.fullName} size="sm" />
+                <div className={`flex flex-col gap-1 ${isAgent ? "items-end" : ""}`}>
+                  <span className="text-xs font-semibold text-gray-500 px-1">
+                    {comment.user.fullName}
+                  </span>
+                  <div
+                    className={`px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words rounded-[18px] ${
+                      isAgent
+                        ? "rounded-br-md bg-sky-100 text-slate-800 border border-sky-200"
+                        : "rounded-bl-md bg-gray-100 text-gray-900 border border-gray-200"
+                    }`}
+                  >
+                    {comment.body}
+                  </div>
+                  <span className="text-[11px] text-gray-400 px-1">
+                    {formatTime(comment.createdAt)}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
+      </div>
+
+      {/* Reply form — pinned at bottom */}
+      <div className="shrink-0 border-t border-gray-200 bg-white px-5 py-3">
+        <form onSubmit={handleSendReply} className="flex gap-2.5 items-end">
+          <textarea
+            value={replyBody}
+            onChange={(e) => setReplyBody(e.target.value)}
+            placeholder="Type your reply…"
+            rows={2}
+            required
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none resize-none transition"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                e.target.form.requestSubmit();
+              }
+            }}
+          />
+          <button
+            type="submit"
+            disabled={sending}
+            className="bg-accent hover:bg-accent-hover text-white font-semibold px-4 py-2 rounded-lg text-sm transition disabled:opacity-50"
+          >
+            {sending ? "Sending…" : "Send"}
+          </button>
+        </form>
       </div>
     </div>
   );

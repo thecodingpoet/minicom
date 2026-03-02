@@ -1,6 +1,7 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useParams } from "react-router-dom";
 import { AuthProvider, useAuth } from "./utils/auth";
 import Layout from "./components/Layout";
+import AgentLayout from "./components/AgentLayout";
 import Spinner from "./components/Spinner";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -8,7 +9,6 @@ import Settings from "./pages/Settings";
 import CustomerDashboard from "./pages/customer/Dashboard";
 import CreateTicket from "./pages/customer/CreateTicket";
 import CustomerTicketDetail from "./pages/customer/TicketDetail";
-import AgentDashboard from "./pages/agent/Dashboard";
 import AgentTicketDetail from "./pages/agent/TicketDetail";
 
 function PrivateRoute({ children, role }) {
@@ -31,12 +31,33 @@ function RootRedirect() {
   return <CustomerDashboard />;
 }
 
+function TicketDetailRouter() {
+  const { user } = useAuth();
+  const { id } = useParams();
+  if (user?.role === "agent") return <Navigate to={`/agent/tickets/${id}`} replace />;
+  return <CustomerTicketDetail />;
+}
+
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
 
+      {/* Agent routes — Intercom-style panel layout */}
+      <Route
+        path="/agent"
+        element={
+          <PrivateRoute role="agent">
+            <AgentLayout />
+          </PrivateRoute>
+        }
+      >
+        <Route index element={null} />
+        <Route path="tickets/:id" element={<AgentTicketDetail />} />
+      </Route>
+
+      {/* Customer & shared routes — classic layout */}
       <Route element={<Layout />}>
         <Route path="/" element={<RootRedirect />} />
 
@@ -49,7 +70,6 @@ function AppRoutes() {
           }
         />
 
-        {/* Customer routes */}
         <Route
           path="/tickets/new"
           element={
@@ -66,25 +86,9 @@ function AppRoutes() {
             </PrivateRoute>
           }
         />
-
-        {/* Agent routes */}
-        <Route
-          path="/agent"
-          element={
-            <PrivateRoute role="agent">
-              <AgentDashboard />
-            </PrivateRoute>
-          }
-        />
       </Route>
     </Routes>
   );
-}
-
-function TicketDetailRouter() {
-  const { user } = useAuth();
-  if (user?.role === "agent") return <AgentTicketDetail />;
-  return <CustomerTicketDetail />;
 }
 
 export default function App() {

@@ -14,20 +14,26 @@ function timeAgo(dateStr) {
   return new Date(dateStr).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-export default function TicketCard({ ticket, showCustomer = false }) {
+export default function TicketCard({ ticket, showCustomer = false, isActive = false, basePath = "/tickets" }) {
   const navigate = useNavigate();
-  const displayName = showCustomer ? ticket.customer?.fullName : ticket.customer?.fullName;
+  const displayName = ticket.customer?.fullName;
 
   return (
     <div
-      className="flex items-center gap-3.5 px-5 py-3.5 border-b border-gray-100 last:border-b-0 cursor-pointer transition-colors hover:bg-gray-50"
-      onClick={() => navigate(`/tickets/${ticket.id}`)}
+      className={`flex items-center gap-3.5 px-5 py-3.5 border-b border-gray-100 last:border-b-0 cursor-pointer transition-colors ${
+        isActive
+          ? "bg-accent/5 border-l-[3px] border-l-accent"
+          : "hover:bg-gray-50 border-l-[3px] border-l-transparent"
+      }`}
+      onClick={() => navigate(`${basePath}/${ticket.id}`)}
     >
       <Avatar name={displayName} size="md" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5">
           <StatusDot status={ticket.status} />
-          <span className="font-semibold text-sm text-gray-900 truncate">{ticket.subject}</span>
+          <span className={`text-sm truncate ${isActive ? "font-bold" : "font-semibold"} text-gray-900`}>
+            {ticket.subject}
+          </span>
         </div>
         <div className="text-[13px] text-gray-500 truncate">
           {showCustomer && <strong>{ticket.customer?.fullName} &middot; </strong>}

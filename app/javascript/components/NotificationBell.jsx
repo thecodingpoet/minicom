@@ -4,6 +4,7 @@ import { useQuery, useMutation, useApolloClient } from "@apollo/client/react";
 import { GET_NOTIFICATIONS, GET_UNREAD_NOTIFICATIONS_COUNT, GET_TICKET } from "../graphql/queries";
 import { MARK_NOTIFICATION_AS_READ, MARK_ALL_NOTIFICATIONS_AS_READ } from "../graphql/mutations";
 import { createNotificationSubscription } from "../utils/actionCable";
+import { useAuth } from "../utils/auth";
 
 function timeAgo(dateStr) {
   const seconds = Math.floor((Date.now() - new Date(dateStr)) / 1000);
@@ -37,6 +38,7 @@ export default function NotificationBell() {
   const navigate = useNavigate();
   const location = useLocation();
   const client = useApolloClient();
+  const { user } = useAuth();
 
   const { data: countData, refetch: refetchCount } = useQuery(GET_UNREAD_NOTIFICATIONS_COUNT, {
     fetchPolicy: "network-only",
@@ -56,7 +58,9 @@ export default function NotificationBell() {
   }, [location.pathname]);
 
   const handleNewNotification = useCallback((data) => {
-    const onTicketPage = locationRef.current === `/tickets/${data.ticket_id}`;
+    const ticketPath = `/tickets/${data.ticket_id}`;
+    const agentTicketPath = `/agent/tickets/${data.ticket_id}`;
+    const onTicketPage = locationRef.current === ticketPath || locationRef.current === agentTicketPath;
 
     if (onTicketPage) {
       markAsRead({ variables: { notificationId: String(data.id) } }).then(() => {
@@ -105,7 +109,10 @@ export default function NotificationBell() {
     }
     setOpen(false);
     if (notification.ticketId) {
-      const ticketPath = `/tickets/${notification.ticketId}`;
+      const isAgent = user?.role === "agent";
+      const ticketPath = isAgent
+        ? `/agent/tickets/${notification.ticketId}`
+        : `/tickets/${notification.ticketId}`;
       if (location.pathname === ticketPath) {
         client.refetchQueries({ include: [GET_TICKET] });
       } else {

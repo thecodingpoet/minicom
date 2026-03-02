@@ -1,14 +1,11 @@
 import { useAuth } from "../utils/auth";
-import { useNavigate, useLocation, Outlet, Link } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import UserMenu from "./UserMenu";
 import NotificationBell from "./NotificationBell";
 
 export default function Layout() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + "/");
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -20,20 +17,6 @@ export default function Layout() {
           >
             <span className="text-lg font-bold text-accent tracking-tight">Minicom</span>
           </div>
-          {user?.role === "agent" && (
-            <nav className="flex gap-1">
-              <Link
-                to="/agent"
-                className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-colors ${
-                  location.pathname === "/agent"
-                    ? "bg-accent-light text-accent"
-                    : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-                }`}
-              >
-                Inbox
-              </Link>
-            </nav>
-          )}
         </div>
         <div className="flex items-center gap-1">
           <NotificationBell />
