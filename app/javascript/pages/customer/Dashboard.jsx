@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useQuery } from "@apollo/client/react";
 import { useNavigate } from "react-router-dom";
 import { GET_TICKETS } from "../../graphql/queries";
@@ -6,12 +5,9 @@ import TicketCard from "../../components/TicketCard";
 import Spinner from "../../components/Spinner";
 
 export default function CustomerDashboard() {
-  const [statusFilter, setStatusFilter] = useState("");
   const navigate = useNavigate();
 
-  const { data, loading, error } = useQuery(GET_TICKETS, {
-    variables: { status: statusFilter || undefined },
-  });
+  const { data, loading, error } = useQuery(GET_TICKETS);
 
   if (loading) return <Spinner />;
   if (error) return <div className="bg-red-50 text-red-500 px-3.5 py-2.5 rounded-lg text-[13px] font-medium">{error.message}</div>;
@@ -28,19 +24,6 @@ export default function CustomerDashboard() {
         >
           New conversation
         </button>
-      </div>
-
-      <div className="flex gap-2.5 flex-wrap items-end">
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="min-w-[180px] px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none transition"
-        >
-          <option value="">All statuses</option>
-          <option value="open">Open</option>
-          <option value="in_progress">In Progress</option>
-          <option value="closed">Closed</option>
-        </select>
       </div>
 
       {tickets.length === 0 ? (
