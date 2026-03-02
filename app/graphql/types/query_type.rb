@@ -59,7 +59,7 @@ module Types
       User.agent
     end
 
-    field :notifications, [Types::NotificationType], null: false do
+    field :notifications, [ Types::NotificationType ], null: false do
       argument :unread_only, Boolean, required: false
     end
 

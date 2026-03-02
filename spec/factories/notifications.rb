@@ -3,7 +3,7 @@
 FactoryBot.define do
   factory :notification do
     association :recipient, factory: :user
-    association :actor, factory: [:user, :agent]
+    association :actor, factory: [ :user, :agent ]
     notifiable { create(:comment, :by_agent) }
     action { "new_comment" }
 
