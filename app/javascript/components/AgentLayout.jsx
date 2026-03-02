@@ -24,7 +24,6 @@ export default function AgentLayout() {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Left panel — ticket list (always visible on md+, hidden on mobile when viewing a ticket) */}
         <div
           className={`border-r border-gray-200 flex flex-col overflow-hidden bg-white shrink-0 w-full md:w-[380px] ${
             hasSelectedTicket ? "hidden md:flex" : "flex"
@@ -33,7 +32,6 @@ export default function AgentLayout() {
           <AgentInbox />
         </div>
 
-        {/* Right panel — ticket detail or empty state */}
         <div
           className={`flex-1 flex flex-col overflow-hidden min-w-0 ${
             hasSelectedTicket ? "flex" : "hidden md:flex"
