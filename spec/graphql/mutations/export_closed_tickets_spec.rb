@@ -71,7 +71,10 @@ RSpec.describe Mutations::ExportClosedTickets, type: :graphql do
     )
 
     data = result["data"]["exportClosedTickets"]
-    expect(data["csvData"]).to include(recent_ticket.id.to_s)
-    expect(data["csvData"]).not_to include(old_ticket.id.to_s)
+    csv = CSV.parse(data["csvData"], headers: true)
+    ticket_ids = csv.map { |row| row["Ticket ID"].to_i }
+
+    expect(ticket_ids).to include(recent_ticket.id)
+    expect(ticket_ids).not_to include(old_ticket.id)
   end
 end
