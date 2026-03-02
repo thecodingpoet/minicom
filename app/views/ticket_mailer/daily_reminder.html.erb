@@ -1,32 +1,52 @@
-<h2>Daily Open Tickets Reminder</h2>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f9fafb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 15px; line-height: 1.5; color: #111827;">
+  <tr>
+    <td style="padding: 40px 24px; background-color: #f9fafb;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width: 560px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+        <!-- Header -->
+        <tr>
+          <td style="padding: 24px 24px 20px; border-bottom: 1px solid #e5e7eb;">
+            <span style="font-size: 20px; font-weight: 700; color: #fc6435; letter-spacing: -0.02em;">Minicom</span>
+          </td>
+        </tr>
+        <!-- Content -->
+        <tr>
+          <td style="padding: 24px;">
+            <h1 style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #111827;">Daily Open Tickets</h1>
+            <p style="margin: 0 0 24px; color: #6b7280; font-size: 15px;">Hi <%= @agent.first_name %>, here are the open tickets that need your attention.</p>
 
-<p>Hi <%= @agent.first_name %>,</p>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border: 1px solid #e5e7eb; border-radius: 6px; overflow: hidden;">
+              <thead>
+                <tr style="background-color: #ffefe9;">
+                  <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">ID</th>
+                  <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Subject</th>
+                  <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Customer</th>
+                  <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Status</th>
+                  <th style="padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.05em;">Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @tickets.each do |ticket| %>
+                  <tr style="border-top: 1px solid #e5e7eb;">
+                    <td style="padding: 12px 16px; font-size: 14px; color: #6b7280;">#<%= ticket.id %></td>
+                    <td style="padding: 12px 16px; font-size: 14px; color: #111827; font-weight: 500;"><%= ticket.subject %></td>
+                    <td style="padding: 12px 16px; font-size: 14px; color: #374151;"><%= ticket.customer.full_name %></td>
+                    <td style="padding: 12px 16px; font-size: 13px; color: #6b7280;"><%= ticket.status.humanize %></td>
+                    <td style="padding: 12px 16px; font-size: 13px; color: #6b7280;"><%= ticket.created_at.strftime("%b %d, %Y") %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
 
-<p>Here are the currently open tickets that need attention:</p>
-
-<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
-  <thead>
-    <tr style="background-color: #f5f5f5;">
-      <th>ID</th>
-      <th>Subject</th>
-      <th>Customer</th>
-      <th>Status</th>
-      <th>Created</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @tickets.each do |ticket| %>
-      <tr>
-        <td>#<%= ticket.id %></td>
-        <td><%= ticket.subject %></td>
-        <td><%= ticket.customer.full_name %></td>
-        <td><%= ticket.status.humanize %></td>
-        <td><%= ticket.created_at.strftime("%b %d, %Y") %></td>
-      </tr>
-    <% end %>
-  </tbody>
+            <p style="margin: 20px 0 0; font-size: 14px; color: #6b7280;"><%= @tickets.count %> open ticket<%= "s" if @tickets.count != 1 %></p>
+          </td>
+        </tr>
+        <!-- Footer -->
+        <tr>
+          <td style="padding: 20px 24px; border-top: 1px solid #e5e7eb; background-color: #f9fafb;">
+            <p style="margin: 0; font-size: 13px; color: #9ca3af;">Minicom Support</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
 </table>
-
-<p>Total: <%= @tickets.count %> open ticket(s)</p>
-
-<p>— Minicom Support System</p>
