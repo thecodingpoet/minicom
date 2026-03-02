@@ -4,12 +4,12 @@ import Layout from "./components/Layout";
 import Spinner from "./components/Spinner";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import Settings from "./pages/Settings";
 import CustomerDashboard from "./pages/customer/Dashboard";
 import CreateTicket from "./pages/customer/CreateTicket";
 import CustomerTicketDetail from "./pages/customer/TicketDetail";
 import AgentDashboard from "./pages/agent/Dashboard";
 import AgentTicketDetail from "./pages/agent/TicketDetail";
-import Export from "./pages/agent/Export";
 
 function PrivateRoute({ children, role }) {
   const { user, loading } = useAuth();
@@ -40,6 +40,15 @@ function AppRoutes() {
       <Route element={<Layout />}>
         <Route path="/" element={<RootRedirect />} />
 
+        <Route
+          path="/settings"
+          element={
+            <PrivateRoute>
+              <Settings />
+            </PrivateRoute>
+          }
+        />
+
         {/* Customer routes */}
         <Route
           path="/tickets/new"
@@ -64,14 +73,6 @@ function AppRoutes() {
           element={
             <PrivateRoute role="agent">
               <AgentDashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/agent/export"
-          element={
-            <PrivateRoute role="agent">
-              <Export />
             </PrivateRoute>
           }
         />

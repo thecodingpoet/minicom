@@ -11,7 +11,6 @@ export default function CustomerDashboard() {
 
   const { data, loading, error } = useQuery(GET_TICKETS, {
     variables: { status: statusFilter || undefined },
-    pollInterval: 30000,
   });
 
   if (loading) return <Spinner />;

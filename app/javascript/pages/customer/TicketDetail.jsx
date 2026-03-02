@@ -12,7 +12,6 @@ export default function CustomerTicketDetail() {
 
   const { data, loading, error } = useQuery(GET_TICKET, {
     variables: { id },
-    pollInterval: 15000,
   });
 
   if (loading) return <Spinner />;

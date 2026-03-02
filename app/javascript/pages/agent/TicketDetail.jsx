@@ -14,7 +14,6 @@ export default function AgentTicketDetail() {
 
   const { data, loading, error } = useQuery(GET_TICKET, {
     variables: { id },
-    pollInterval: 10000,
   });
 
   const { data: agentsData } = useQuery(GET_AGENTS);

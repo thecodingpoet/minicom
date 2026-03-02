@@ -1,31 +1,13 @@
 import { useAuth } from "../utils/auth";
 import { useNavigate, useLocation, Outlet, Link } from "react-router-dom";
-import Avatar from "./Avatar";
+import UserMenu from "./UserMenu";
 
 export default function Layout() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
   const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + "/");
-
-  const navLink = (to, label, active) => (
-    <Link
-      to={to}
-      className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-colors ${
-        active
-          ? "bg-accent-light text-accent"
-          : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
-      }`}
-    >
-      {label}
-    </Link>
-  );
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -42,25 +24,20 @@ export default function Layout() {
           </div>
           {user?.role === "agent" && (
             <nav className="flex gap-1">
-              {navLink("/agent", "Inbox", isActive("/agent") && !isActive("/agent/export"))}
-              {navLink("/agent/export", "Export", isActive("/agent/export"))}
+              <Link
+                to="/agent"
+                className={`px-3.5 py-1.5 rounded-full text-[13px] font-medium transition-colors ${
+                  location.pathname === "/agent"
+                    ? "bg-accent-light text-accent"
+                    : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                }`}
+              >
+                Inbox
+              </Link>
             </nav>
           )}
         </div>
-        {user && (
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2.5 text-[13px] text-gray-500">
-              <Avatar name={user.fullName} size="sm" />
-              <span>{user.fullName}</span>
-            </div>
-            <button
-              onClick={handleLogout}
-              className="text-[13px] font-medium text-gray-400 hover:text-red-500 hover:bg-red-50 px-2.5 py-1 rounded-md transition-colors border-none bg-transparent cursor-pointer"
-            >
-              Log out
-            </button>
-          </div>
-        )}
+        <UserMenu />
       </header>
       <main className="flex-1 w-full max-w-[1080px] mx-auto px-6 py-7">
         <Outlet />
