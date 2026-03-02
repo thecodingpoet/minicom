@@ -5,7 +5,7 @@ class Comment < ApplicationRecord
   validates :body, presence: true
   validate :customer_can_comment
 
-  after_create :update_ticket_status_if_agent
+  after_create :claim_ticket_if_agent
 
   private
 
@@ -16,8 +16,8 @@ class Comment < ApplicationRecord
     errors.add(:base, "Customers cannot comment until an agent has responded")
   end
 
-  def update_ticket_status_if_agent
+  def claim_ticket_if_agent
     return unless user.agent?
-    ticket.in_progress! if ticket.open?
+    ticket.claim!(user)
   end
 end

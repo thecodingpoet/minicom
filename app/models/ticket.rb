@@ -14,4 +14,11 @@ class Ticket < ApplicationRecord
   def has_agent_comment?
     comments.joins(:user).where(users: { role: :agent }).exists?
   end
+
+  def claim!(agent)
+    updates = {}
+    updates[:status] = :in_progress if open?
+    updates[:assigned_agent_id] = agent.id if assigned_agent_id.nil?
+    update!(updates) if updates.any?
+  end
 end
