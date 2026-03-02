@@ -20,6 +20,7 @@ gem "jwt"
 gem "graphql"
 gem "apollo_upload_server", "~> 2.1"
 gem "mission_control-jobs"
+gem "dotenv-rails"
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"

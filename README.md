@@ -25,7 +25,15 @@ A ticket support system built with Rails 8, GraphQL, and ActionCable.
    bin/rails db:seed   
    ```
 
-3. **Start the server**
+3. **Environment variables (optional)**
+
+   Copy `.env.example` to `.env` and fill in the values. Currently only required for [Mission Control Jobs](http://localhost:3000/jobs) (background job dashboard):
+
+   ```bash
+   cp .env.example .env
+   ```
+
+4. **Start the server**
 
    ```bash
    bin/rails server
@@ -33,6 +41,7 @@ A ticket support system built with Rails 8, GraphQL, and ActionCable.
 
    - App: http://localhost:3000
    - GraphiQL: http://localhost:3000/graphiql
+   - Mission Control Jobs: http://localhost:3000/jobs (requires `.env` credentials)
    - ActionCable: ws://localhost:3000/cable
 
 ## Running Tests
