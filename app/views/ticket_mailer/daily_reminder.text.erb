@@ -1,0 +1,13 @@
+Daily Open Tickets Reminder
+
+Hi <%= @agent.first_name %>,
+
+Here are the currently open tickets that need attention:
+
+<% @tickets.each do |ticket| %>
+- #<%= ticket.id %> | <%= ticket.subject %> | Customer: <%= ticket.customer.full_name %> | <%= ticket.status.humanize %> | Created: <%= ticket.created_at.strftime("%b %d, %Y") %>
+<% end %>
+
+Total: <%= @tickets.count %> open ticket(s)
+
+— Minicom Support System

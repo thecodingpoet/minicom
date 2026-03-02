@@ -1,0 +1,32 @@
+<h2>Daily Open Tickets Reminder</h2>
+
+<p>Hi <%= @agent.first_name %>,</p>
+
+<p>Here are the currently open tickets that need attention:</p>
+
+<table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%;">
+  <thead>
+    <tr style="background-color: #f5f5f5;">
+      <th>ID</th>
+      <th>Subject</th>
+      <th>Customer</th>
+      <th>Status</th>
+      <th>Created</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @tickets.each do |ticket| %>
+      <tr>
+        <td>#<%= ticket.id %></td>
+        <td><%= ticket.subject %></td>
+        <td><%= ticket.customer.full_name %></td>
+        <td><%= ticket.status.humanize %></td>
+        <td><%= ticket.created_at.strftime("%b %d, %Y") %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<p>Total: <%= @tickets.count %> open ticket(s)</p>
+
+<p>— Minicom Support System</p>
