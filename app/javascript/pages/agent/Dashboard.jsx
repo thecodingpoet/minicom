@@ -34,44 +34,41 @@ export default function AgentDashboard() {
   });
 
   if (loading) return <sl-spinner style={{ fontSize: "2rem" }} />;
-  if (error) return <sl-alert variant="danger" open>{error.message}</sl-alert>;
+  if (error) return <div className="auth-error">{error.message}</div>;
 
   const tickets = data?.tickets || [];
-
   const openCount = tickets.filter((t) => t.status === "open").length;
   const inProgressCount = tickets.filter((t) => t.status === "in_progress").length;
   const closedCount = tickets.filter((t) => t.status === "closed").length;
 
   return (
     <div className="dashboard">
-      <h2>Agent Dashboard</h2>
+      <div className="dashboard-header">
+        <h2>Inbox</h2>
+      </div>
 
-      <div className="stats-cards">
-        <sl-card className="stat-card">
-          <div className="stat-number">{openCount}</div>
-          <div className="stat-label">Open</div>
-        </sl-card>
-        <sl-card className="stat-card">
-          <div className="stat-number">{inProgressCount}</div>
-          <div className="stat-label">In Progress</div>
-        </sl-card>
-        <sl-card className="stat-card">
-          <div className="stat-number">{closedCount}</div>
-          <div className="stat-label">Closed</div>
-        </sl-card>
-        <sl-card className="stat-card">
-          <div className="stat-number">{tickets.length}</div>
-          <div className="stat-label">Total</div>
-        </sl-card>
+      <div className="stats-row">
+        <div className="stat-pill">
+          <span className="stat-pill-count">{openCount}</span> Open
+        </div>
+        <div className="stat-pill">
+          <span className="stat-pill-count">{inProgressCount}</span> In Progress
+        </div>
+        <div className="stat-pill">
+          <span className="stat-pill-count">{closedCount}</span> Closed
+        </div>
+        <div className="stat-pill">
+          <span className="stat-pill-count">{tickets.length}</span> Total
+        </div>
       </div>
 
       <div className="filters">
         <sl-select
           ref={statusRef}
-          label="Status"
+          placeholder="All statuses"
           value={statusFilter}
           clearable
-          style={{ maxWidth: "180px" }}
+          style={{ minWidth: "170px" }}
         >
           <sl-option value="open">Open</sl-option>
           <sl-option value="in_progress">In Progress</sl-option>
@@ -80,22 +77,28 @@ export default function AgentDashboard() {
 
         <sl-select
           ref={assignRef}
-          label="Assignment"
+          placeholder="All assignments"
           value={assignmentFilter}
           clearable
-          style={{ maxWidth: "180px" }}
+          style={{ minWidth: "180px" }}
         >
           <sl-option value="mine">Assigned to Me</sl-option>
           <sl-option value="unassigned">Unassigned</sl-option>
         </sl-select>
       </div>
 
-      <div className="tickets-grid">
-        {tickets.length === 0 && <p>No tickets match your filters.</p>}
-        {tickets.map((ticket) => (
-          <TicketCard key={ticket.id} ticket={ticket} showCustomer />
-        ))}
-      </div>
+      {tickets.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">📭</div>
+          <p>No tickets match your filters.</p>
+        </div>
+      ) : (
+        <div className="ticket-list">
+          {tickets.map((ticket) => (
+            <TicketCard key={ticket.id} ticket={ticket} showCustomer />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

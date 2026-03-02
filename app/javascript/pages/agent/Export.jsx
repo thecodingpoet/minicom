@@ -30,21 +30,21 @@ export default function Export() {
 
   return (
     <div className="export-page">
-      <h2>Export Closed Tickets</h2>
-      <sl-card>
+      <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 20 }}>Export</h2>
+      <div className="export-card">
+        <h3>Closed tickets (last 30 days)</h3>
         <p>
-          Download a CSV file of all tickets closed in the last 30 days.
-          Includes ticket ID, subject, customer email, status, and timestamps.
+          Download a CSV file containing all tickets closed in the last 30 days,
+          including ticket ID, subject, customer email, status, and timestamps.
         </p>
         <sl-button
           variant="primary"
           onClick={handleExport}
           loading={loading || undefined}
         >
-          <sl-icon slot="prefix" name="download" />
           Download CSV
         </sl-button>
-      </sl-card>
+      </div>
     </div>
   );
 }

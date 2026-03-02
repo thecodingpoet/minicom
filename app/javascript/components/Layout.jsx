@@ -1,34 +1,47 @@
 import { useAuth } from "../utils/auth";
-import { useNavigate, Outlet } from "react-router-dom";
+import { useNavigate, useLocation, Outlet, Link } from "react-router-dom";
+import Avatar from "./Avatar";
 
 export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
 
+  const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + "/");
+
   return (
     <div className="app-layout">
       <header className="app-header">
         <div className="header-left">
-          <h1 onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
+          <div className="header-logo" onClick={() => navigate(user?.role === "agent" ? "/agent" : "/")}>
+            <div className="header-logo-icon">M</div>
             Minicom
-          </h1>
-          {user && (
-            <sl-badge variant="neutral" style={{ marginLeft: "12px" }}>
-              {user.role}
-            </sl-badge>
+          </div>
+          {user?.role === "agent" && (
+            <nav className="header-nav">
+              <Link to="/agent" className={isActive("/agent") && !isActive("/agent/export") ? "active" : ""}>
+                Inbox
+              </Link>
+              <Link to="/agent/export" className={isActive("/agent/export") ? "active" : ""}>
+                Export
+              </Link>
+            </nav>
           )}
         </div>
         {user && (
           <div className="header-right">
-            <span>Hello, {user.firstName}</span>
-            <sl-button size="small" variant="text" onClick={handleLogout}>
-              Logout
-            </sl-button>
+            <div className="header-user">
+              <Avatar name={user.fullName} size="sm" />
+              <span>{user.fullName}</span>
+            </div>
+            <button className="header-logout" onClick={handleLogout}>
+              Log out
+            </button>
           </div>
         )}
       </header>

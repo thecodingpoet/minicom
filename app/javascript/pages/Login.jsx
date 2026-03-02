@@ -37,39 +37,30 @@ export default function Login() {
 
   return (
     <div className="auth-page">
-      <sl-card className="auth-card">
-        <h2>Sign In</h2>
-        {error && (
-          <sl-alert variant="danger" open>
-            {error}
-          </sl-alert>
-        )}
-        <form onSubmit={handleSubmit}>
-          <sl-input
-            label="Email"
-            name="email"
-            type="email"
-            required
-          />
-          <sl-input
-            label="Password"
-            name="password"
-            type="password"
-            required
-          />
+      <div className="auth-card">
+        <div className="auth-brand">
+          <div className="auth-brand-icon">M</div>
+          <h2>Welcome back</h2>
+          <p>Sign in to your Minicom account</p>
+        </div>
+        {error && <div className="auth-error">{error}</div>}
+        <form onSubmit={handleSubmit} className="auth-form">
+          <sl-input label="Email" name="email" type="email" required />
+          <sl-input label="Password" name="password" type="password" required />
           <sl-button
             type="submit"
             variant="primary"
-            style={{ width: "100%", marginTop: "16px" }}
+            className="auth-submit"
+            style={{ width: "100%" }}
             loading={loading || undefined}
           >
             Sign In
           </sl-button>
         </form>
-        <p style={{ marginTop: "16px", textAlign: "center" }}>
-          Don't have an account? <Link to="/signup">Sign up</Link>
-        </p>
-      </sl-card>
+        <div className="auth-footer">
+          Don't have an account? <Link to="/signup">Create one</Link>
+        </div>
+      </div>
     </div>
   );
 }

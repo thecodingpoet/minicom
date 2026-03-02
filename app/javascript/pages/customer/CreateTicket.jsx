@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "@apollo/client/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { CREATE_TICKET } from "../../graphql/mutations";
 
 export default function CreateTicket() {
@@ -35,31 +35,22 @@ export default function CreateTicket() {
   };
 
   return (
-    <div className="create-ticket-page">
-      <h2>Create New Ticket</h2>
-      {error && (
-        <sl-alert variant="danger" open>
-          {error}
-        </sl-alert>
-      )}
-      <sl-card>
-        <form onSubmit={handleSubmit}>
-          <sl-input label="Subject" name="subject" required />
-          <sl-textarea label="Description" name="description" rows={6} required />
-          <div className="form-actions">
-            <sl-button variant="default" onClick={() => navigate("/")}>
-              Cancel
-            </sl-button>
-            <sl-button
-              type="submit"
-              variant="primary"
-              loading={loading || undefined}
-            >
-              Create Ticket
+    <div className="create-ticket-page" style={{ maxWidth: 640 }}>
+      <Link to="/" className="back-link">← Back to conversations</Link>
+      <h2 style={{ marginBottom: 20, fontSize: 20, fontWeight: 700 }}>New conversation</h2>
+      {error && <div className="auth-error" style={{ marginBottom: 16 }}>{error}</div>}
+      <div className="ticket-detail-info">
+        <form onSubmit={handleSubmit} className="auth-form">
+          <sl-input label="Subject" name="subject" placeholder="What do you need help with?" required />
+          <sl-textarea label="Description" name="description" placeholder="Describe your issue in detail..." rows={6} required />
+          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 8 }}>
+            <sl-button variant="default" onClick={() => navigate("/")}>Cancel</sl-button>
+            <sl-button type="submit" variant="primary" loading={loading || undefined}>
+              Send
             </sl-button>
           </div>
         </form>
-      </sl-card>
+      </div>
     </div>
   );
 }

@@ -1,8 +1,18 @@
 import { useMutation } from "@apollo/client/react";
 import { CREATE_COMMENT } from "../graphql/mutations";
 import { GET_TICKET } from "../graphql/queries";
+import Avatar from "./Avatar";
 
-export default function CommentThread({ comments, ticketId, canComment }) {
+function formatTime(dateStr) {
+  return new Date(dateStr).toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+export default function CommentThread({ comments, ticketId, canComment, currentUserRole }) {
   const [createComment, { loading }] = useMutation(CREATE_COMMENT, {
     refetchQueries: [{ query: GET_TICKET, variables: { id: ticketId } }],
   });
@@ -27,49 +37,57 @@ export default function CommentThread({ comments, ticketId, canComment }) {
     }
   };
 
-  const formatDate = (dateStr) => {
-    return new Date(dateStr).toLocaleString();
-  };
-
   return (
-    <div className="comment-thread">
-      <h3>Comments</h3>
+    <div className="conversation">
+      <div className="conversation-header">
+        Conversation ({comments.length})
+      </div>
 
-      {comments.length === 0 && (
-        <p className="no-comments">No comments yet.</p>
-      )}
+      <div className="conversation-messages">
+        {comments.length === 0 && (
+          <div className="conversation-empty">
+            No messages yet. Start the conversation!
+          </div>
+        )}
 
-      <div className="comments-list">
-        {comments.map((comment) => (
-          <sl-card key={comment.id} className="comment-card">
-            <div className="comment-header">
-              <strong>{comment.user.fullName}</strong>
-              <sl-badge
-                variant={comment.user.role === "agent" ? "primary" : "neutral"}
-              >
-                {comment.user.role}
-              </sl-badge>
-              <span className="comment-date">{formatDate(comment.createdAt)}</span>
+        {comments.map((comment) => {
+          const isAgent = comment.user.role === "agent";
+          return (
+            <div
+              key={comment.id}
+              className={`message message--${isAgent ? "agent" : "customer"}`}
+            >
+              <Avatar name={comment.user.fullName} size="sm" />
+              <div className="message-content">
+                <span className="message-sender">{comment.user.fullName}</span>
+                <div className="message-bubble">{comment.body}</div>
+                <span className="message-time">{formatTime(comment.createdAt)}</span>
+              </div>
             </div>
-            <p className="comment-body">{comment.body}</p>
-          </sl-card>
-        ))}
+          );
+        })}
       </div>
 
       {canComment && (
-        <form onSubmit={handleSubmit} className="comment-form">
-          <sl-textarea label="Add a comment" name="body" rows={3} required />
-          <sl-button type="submit" variant="primary" loading={loading || undefined}>
-            Post Comment
-          </sl-button>
-        </form>
+        <div className="conversation-footer">
+          <form onSubmit={handleSubmit}>
+            <sl-textarea
+              name="body"
+              placeholder="Type your reply..."
+              rows={2}
+              required
+            />
+            <sl-button type="submit" variant="primary" loading={loading || undefined}>
+              Send
+            </sl-button>
+          </form>
+        </div>
       )}
 
       {!canComment && (
-        <sl-alert variant="neutral" open>
-          <sl-icon slot="icon" name="info-circle" />
-          Waiting for an agent to respond before you can comment.
-        </sl-alert>
+        <div className="conversation-disabled">
+          Waiting for an agent to respond before you can reply.
+        </div>
       )}
     </div>
   );

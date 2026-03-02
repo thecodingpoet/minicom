@@ -1,22 +1,12 @@
 import { useRef, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { GET_TICKET, GET_AGENTS } from "../../graphql/queries";
 import { UPDATE_TICKET_STATUS, ASSIGN_TICKET } from "../../graphql/mutations";
 import { useAuth } from "../../utils/auth";
+import { StatusPill } from "../../components/StatusDot";
+import Avatar from "../../components/Avatar";
 import CommentThread from "../../components/CommentThread";
-
-const statusVariant = {
-  open: "success",
-  in_progress: "warning",
-  closed: "danger",
-};
-
-const statusLabel = {
-  open: "Open",
-  in_progress: "In Progress",
-  closed: "Closed",
-};
 
 export default function AgentTicketDetail() {
   const { id } = useParams();
@@ -80,7 +70,7 @@ export default function AgentTicketDetail() {
   });
 
   if (loading) return <sl-spinner style={{ fontSize: "2rem" }} />;
-  if (error) return <sl-alert variant="danger" open>{error.message}</sl-alert>;
+  if (error) return <div className="auth-error">{error.message}</div>;
 
   const ticket = data?.ticket;
   if (!ticket) return <p>Ticket not found.</p>;
@@ -99,84 +89,100 @@ export default function AgentTicketDetail() {
 
   return (
     <div className="ticket-detail">
+      <Link to="/agent" className="back-link">← Back to inbox</Link>
+
       <div className="ticket-detail-header">
         <h2>{ticket.subject}</h2>
-        <sl-badge variant={statusVariant[ticket.status]}>
-          {statusLabel[ticket.status]}
-        </sl-badge>
+        <StatusPill status={ticket.status} />
       </div>
 
-      <sl-card>
-        <p>{ticket.description}</p>
-        <div className="ticket-meta">
-          <span>Customer: {ticket.customer.fullName} ({ticket.customer.email})</span>
-          <span>Created: {new Date(ticket.createdAt).toLocaleString()}</span>
-        </div>
-      </sl-card>
+      <div className="ticket-detail-columns">
+        <div className="ticket-detail-main">
+          <div className="ticket-detail-info">
+            <p>{ticket.description}</p>
+            <div className="ticket-meta">
+              <span>Created {new Date(ticket.createdAt).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</span>
+            </div>
+          </div>
 
-      {ticket.status !== "closed" && (
-        <div className="agent-controls">
-          <sl-card>
-            <h3>Manage Ticket</h3>
-            <div className="controls-row">
+          {ticket.attachments.length > 0 && (
+            <div className="attachments-section">
+              <h3>Attachments</h3>
+              <div className="attachments-grid">
+                {ticket.attachments.map((att, i) => (
+                  <a key={i} href={att.url} target="_blank" rel="noreferrer" className="attachment-chip">
+                    📎 {att.filename}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <CommentThread
+            comments={ticket.comments}
+            ticketId={ticket.id}
+            canComment={true}
+            currentUserRole="agent"
+          />
+        </div>
+
+        <div className="ticket-sidebar">
+          <h3>Details</h3>
+
+          <div className="sidebar-customer">
+            <Avatar name={ticket.customer.fullName} size="md" />
+            <div className="sidebar-customer-info">
+              <strong>{ticket.customer.fullName}</strong>
+              <span>{ticket.customer.email}</span>
+            </div>
+          </div>
+
+          <hr className="sidebar-divider" />
+
+          <div className="sidebar-field">
+            <span className="sidebar-field-label">Status</span>
+            {ticket.status === "closed" ? (
+              <StatusPill status="closed" />
+            ) : (
               <sl-select
                 ref={statusRef}
-                label="Status"
                 value={ticket.status}
-                style={{ maxWidth: "200px" }}
+                size="small"
               >
                 <sl-option value="open">Open</sl-option>
                 <sl-option value="in_progress">In Progress</sl-option>
                 <sl-option value="closed">Closed</sl-option>
               </sl-select>
-
-              <sl-select
-                ref={assignRef}
-                label="Assign to Agent"
-                value={ticket.assignedAgent?.id || ""}
-                clearable
-                style={{ maxWidth: "250px" }}
-              >
-                {agents.map((agent) => (
-                  <sl-option key={agent.id} value={agent.id}>
-                    {agent.fullName}
-                  </sl-option>
-                ))}
-              </sl-select>
-
-              <sl-button
-                variant="default"
-                size="medium"
-                onClick={handleAssignToMe}
-              >
-                Assign to Me
-              </sl-button>
-            </div>
-          </sl-card>
-        </div>
-      )}
-
-      {ticket.attachments.length > 0 && (
-        <div className="attachments-section">
-          <h3>Attachments</h3>
-          <div className="attachments-list">
-            {ticket.attachments.map((att, i) => (
-              <sl-card key={i} className="attachment-card">
-                <a href={att.url} target="_blank" rel="noreferrer">
-                  {att.filename}
-                </a>
-                <small>{att.contentType}</small>
-              </sl-card>
-            ))}
+            )}
           </div>
-        </div>
-      )}
 
-      <CommentThread
-        comments={ticket.comments}
-        ticketId={ticket.id}
-        canComment={true}
-      />
+          <div className="sidebar-field">
+            <span className="sidebar-field-label">Assigned to</span>
+            <sl-select
+              ref={assignRef}
+              value={ticket.assignedAgent?.id || ""}
+              placeholder="Unassigned"
+              clearable
+              size="small"
+            >
+              {agents.map((agent) => (
+                <sl-option key={agent.id} value={agent.id}>
+                  {agent.fullName}
+                </sl-option>
+              ))}
+            </sl-select>
+          </div>
+
+          <sl-button
+            variant="default"
+            size="small"
+            style={{ width: "100%" }}
+            onClick={handleAssignToMe}
+          >
+            Assign to me
+          </sl-button>
+        </div>
+      </div>
     </div>
   );
 }

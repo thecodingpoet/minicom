@@ -1,45 +1,44 @@
 import { useNavigate } from "react-router-dom";
+import Avatar from "./Avatar";
+import { StatusDot } from "./StatusDot";
 
-const statusVariant = {
-  open: "success",
-  in_progress: "warning",
-  closed: "danger",
-};
-
-const statusLabel = {
-  open: "Open",
-  in_progress: "In Progress",
-  closed: "Closed",
-};
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h`;
+  const days = Math.floor(hrs / 24);
+  if (days < 7) return `${days}d`;
+  return new Date(dateStr).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+}
 
 export default function TicketCard({ ticket, showCustomer = false }) {
   const navigate = useNavigate();
+  const displayName = showCustomer ? ticket.customer?.fullName : ticket.customer?.fullName;
 
   return (
-    <sl-card
-      className="ticket-card"
-      style={{ cursor: "pointer" }}
-      onClick={() => navigate(`/tickets/${ticket.id}`)}
-    >
-      <div className="ticket-card-header">
-        <strong>{ticket.subject}</strong>
-        <sl-badge variant={statusVariant[ticket.status] || "neutral"}>
-          {statusLabel[ticket.status] || ticket.status}
-        </sl-badge>
+    <div className="ticket-row" onClick={() => navigate(`/tickets/${ticket.id}`)}>
+      <Avatar name={displayName} size="md" />
+      <div className="ticket-row-content">
+        <div className="ticket-row-top">
+          <StatusDot status={ticket.status} />
+          <span className="ticket-row-subject">{ticket.subject}</span>
+        </div>
+        <div className="ticket-row-preview">
+          {showCustomer && <strong>{ticket.customer?.fullName} &middot; </strong>}
+          {ticket.description?.substring(0, 100)}
+        </div>
       </div>
-      <p className="ticket-card-description">
-        {ticket.description?.substring(0, 120)}
-        {ticket.description?.length > 120 ? "..." : ""}
-      </p>
-      <div className="ticket-card-meta">
-        {showCustomer && (
-          <span>Customer: {ticket.customer?.fullName}</span>
-        )}
+      <div className="ticket-row-meta">
+        <span className="ticket-row-time">{timeAgo(ticket.createdAt)}</span>
         {ticket.assignedAgent && (
-          <span>Assigned: {ticket.assignedAgent.fullName}</span>
+          <span className="ticket-row-agent">
+            <Avatar name={ticket.assignedAgent.fullName} size="sm" />
+          </span>
         )}
-        <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
       </div>
-    </sl-card>
+    </div>
   );
 }

@@ -23,27 +23,26 @@ export default function CustomerDashboard() {
   });
 
   if (loading) return <sl-spinner style={{ fontSize: "2rem" }} />;
-  if (error) return <sl-alert variant="danger" open>{error.message}</sl-alert>;
+  if (error) return <div className="auth-error">{error.message}</div>;
 
   const tickets = data?.tickets || [];
 
   return (
     <div className="dashboard">
       <div className="dashboard-header">
-        <h2>My Tickets</h2>
+        <h2>Your conversations</h2>
         <sl-button variant="primary" onClick={() => navigate("/tickets/new")}>
-          <sl-icon slot="prefix" name="plus-lg" />
-          New Ticket
+          New conversation
         </sl-button>
       </div>
 
       <div className="filters">
         <sl-select
           ref={selectRef}
-          label="Filter by status"
+          placeholder="All statuses"
           value={statusFilter}
           clearable
-          style={{ maxWidth: "200px" }}
+          style={{ minWidth: "180px" }}
         >
           <sl-option value="open">Open</sl-option>
           <sl-option value="in_progress">In Progress</sl-option>
@@ -51,14 +50,18 @@ export default function CustomerDashboard() {
         </sl-select>
       </div>
 
-      <div className="tickets-grid">
-        {tickets.length === 0 && (
-          <p>No tickets found. Create your first ticket!</p>
-        )}
-        {tickets.map((ticket) => (
-          <TicketCard key={ticket.id} ticket={ticket} />
-        ))}
-      </div>
+      {tickets.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">💬</div>
+          <p>No conversations yet. Start one!</p>
+        </div>
+      ) : (
+        <div className="ticket-list">
+          {tickets.map((ticket) => (
+            <TicketCard key={ticket.id} ticket={ticket} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
