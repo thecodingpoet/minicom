@@ -1,24 +1,54 @@
-# README
+# Minicom
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A ticket support system built with Rails 8, GraphQL, and ActionCable.
 
-Things you may want to cover:
+## Requirements
 
-* Ruby version
+- Ruby 3.2.8
+- PostgreSQL
+- Node.js (for JavaScript bundling)
 
-* System dependencies
+## Setup
 
-* Configuration
+1. **Clone and install dependencies**
 
-* Database creation
+   ```bash
+   bundle install
+   yarn install
+   ```
 
-* Database initialization
+2. **Create and setup the database**
 
-* How to run the test suite
+   ```bash
+   bin/rails db:create
+   bin/rails db:migrate
+   bin/rails db:seed   
+   ```
 
-* Services (job queues, cache servers, search engines, etc.)
+3. **Start the server**
 
-* Deployment instructions
+   ```bash
+   bin/rails server
+   ```
 
-* ...
+   - App: http://localhost:3000
+   - GraphiQL: http://localhost:3000/graphiql
+   - ActionCable: ws://localhost:3000/cable
+
+## Running Tests
+
+```bash
+# Run the full test suite
+bundle exec rspec
+
+# Run specific specs
+bundle exec rspec spec/models/
+bundle exec rspec spec/graphql/
+bundle exec rspec spec/requests/
+```
+
+The test suite uses RSpec with Factory Bot, Faker, and Shoulda Matchers. Ensure the test database exists:
+
+```bash
+RAILS_ENV=test bin/rails db:create db:schema:load
+```
