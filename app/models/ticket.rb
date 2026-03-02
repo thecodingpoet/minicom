@@ -15,7 +15,7 @@ class Ticket < ApplicationRecord
   scope :active, -> { where(status: [ :open, :in_progress ]) }
   scope :assigned, -> { where.not(assigned_agent_id: nil) }
   scope :unassigned, -> { where(assigned_agent_id: nil) }
-  scope :assigned_to_or_unassigned, -> (agent) { active.where(assigned_agent_id: [nil, agent.id]) }
+  scope :assigned_to_or_unassigned, ->(agent) { active.where(assigned_agent_id: [ nil, agent.id ]) }
 
   def has_agent_comment?
     comments.joins(:user).where(users: { role: :agent }).exists?
