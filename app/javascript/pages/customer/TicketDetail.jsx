@@ -4,6 +4,7 @@ import { GET_TICKET } from "../../graphql/queries";
 import { useAuth } from "../../utils/auth";
 import { StatusPill } from "../../components/StatusDot";
 import CommentThread from "../../components/CommentThread";
+import Spinner from "../../components/Spinner";
 
 export default function CustomerTicketDetail() {
   const { id } = useParams();
@@ -14,8 +15,8 @@ export default function CustomerTicketDetail() {
     pollInterval: 15000,
   });
 
-  if (loading) return <sl-spinner style={{ fontSize: "2rem" }} />;
-  if (error) return <div className="auth-error">{error.message}</div>;
+  if (loading) return <Spinner />;
+  if (error) return <div className="bg-red-50 text-red-500 px-3.5 py-2.5 rounded-lg text-[13px] font-medium">{error.message}</div>;
 
   const ticket = data?.ticket;
   if (!ticket) return <p>Ticket not found.</p>;
@@ -24,17 +25,19 @@ export default function CustomerTicketDetail() {
   const canComment = user?.role === "agent" || hasAgentComment;
 
   return (
-    <div className="ticket-detail">
-      <Link to="/" className="back-link">← Back to conversations</Link>
+    <div className="flex flex-col gap-5">
+      <Link to="/" className="inline-flex items-center gap-1 text-[13px] font-medium text-gray-500 hover:text-accent no-underline">
+        ← Back to conversations
+      </Link>
 
-      <div className="ticket-detail-header">
-        <h2>{ticket.subject}</h2>
+      <div className="flex items-start justify-between gap-4">
+        <h2 className="text-xl font-bold leading-snug">{ticket.subject}</h2>
         <StatusPill status={ticket.status} />
       </div>
 
-      <div className="ticket-detail-info">
-        <p>{ticket.description}</p>
-        <div className="ticket-meta">
+      <div className="bg-white border border-gray-200 rounded-2xl p-5">
+        <p className="text-gray-900 leading-relaxed whitespace-pre-wrap">{ticket.description}</p>
+        <div className="flex gap-5 mt-4 pt-4 border-t border-gray-100 text-[13px] text-gray-500 flex-wrap">
           <span>Created {new Date(ticket.createdAt).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" })}</span>
           {ticket.assignedAgent && (
             <span>Assigned to {ticket.assignedAgent.fullName}</span>
@@ -43,11 +46,17 @@ export default function CustomerTicketDetail() {
       </div>
 
       {ticket.attachments.length > 0 && (
-        <div className="attachments-section">
-          <h3>Attachments</h3>
-          <div className="attachments-grid">
+        <div className="mt-1">
+          <h3 className="text-sm font-semibold mb-2.5">Attachments</h3>
+          <div className="flex gap-2 flex-wrap">
             {ticket.attachments.map((att, i) => (
-              <a key={i} href={att.url} target="_blank" rel="noreferrer" className="attachment-chip">
+              <a
+                key={i}
+                href={att.url}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 bg-white border border-gray-200 rounded-lg px-3.5 py-2 text-[13px] text-accent hover:bg-accent-light transition no-underline"
+              >
                 📎 {att.filename}
               </a>
             ))}

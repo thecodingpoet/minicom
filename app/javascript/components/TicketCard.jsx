@@ -19,24 +19,25 @@ export default function TicketCard({ ticket, showCustomer = false }) {
   const displayName = showCustomer ? ticket.customer?.fullName : ticket.customer?.fullName;
 
   return (
-    <div className="ticket-row" onClick={() => navigate(`/tickets/${ticket.id}`)}>
+    <div
+      className="flex items-center gap-3.5 px-5 py-3.5 border-b border-gray-100 last:border-b-0 cursor-pointer transition-colors hover:bg-gray-50"
+      onClick={() => navigate(`/tickets/${ticket.id}`)}
+    >
       <Avatar name={displayName} size="md" />
-      <div className="ticket-row-content">
-        <div className="ticket-row-top">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-0.5">
           <StatusDot status={ticket.status} />
-          <span className="ticket-row-subject">{ticket.subject}</span>
+          <span className="font-semibold text-sm text-gray-900 truncate">{ticket.subject}</span>
         </div>
-        <div className="ticket-row-preview">
+        <div className="text-[13px] text-gray-500 truncate">
           {showCustomer && <strong>{ticket.customer?.fullName} &middot; </strong>}
           {ticket.description?.substring(0, 100)}
         </div>
       </div>
-      <div className="ticket-row-meta">
-        <span className="ticket-row-time">{timeAgo(ticket.createdAt)}</span>
+      <div className="flex flex-col items-end gap-1 shrink-0">
+        <span className="text-xs text-gray-400 whitespace-nowrap">{timeAgo(ticket.createdAt)}</span>
         {ticket.assignedAgent && (
-          <span className="ticket-row-agent">
-            <Avatar name={ticket.assignedAgent.fullName} size="sm" />
-          </span>
+          <Avatar name={ticket.assignedAgent.fullName} size="sm" />
         )}
       </div>
     </div>

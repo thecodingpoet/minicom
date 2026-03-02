@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./utils/auth";
 import Layout from "./components/Layout";
+import Spinner from "./components/Spinner";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import CustomerDashboard from "./pages/customer/Dashboard";
@@ -13,7 +14,7 @@ import Export from "./pages/agent/Export";
 function PrivateRoute({ children, role }) {
   const { user, loading } = useAuth();
 
-  if (loading) return <sl-spinner style={{ fontSize: "2rem" }} />;
+  if (loading) return <Spinner />;
   if (!user) return <Navigate to="/login" />;
   if (role && user.role !== role) return <Navigate to="/" />;
 
@@ -23,7 +24,7 @@ function PrivateRoute({ children, role }) {
 function RootRedirect() {
   const { user, loading } = useAuth();
 
-  if (loading) return <sl-spinner style={{ fontSize: "2rem" }} />;
+  if (loading) return <Spinner />;
   if (!user) return <Navigate to="/login" />;
   if (user.role === "agent") return <Navigate to="/agent" />;
 

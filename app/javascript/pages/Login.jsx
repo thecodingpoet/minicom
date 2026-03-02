@@ -15,9 +15,11 @@ export default function Login() {
     e.preventDefault();
     setError("");
 
-    const form = e.target;
-    const email = form.querySelector('[name="email"]').value;
-    const password = form.querySelector('[name="password"]').value;
+    const formData = new FormData(e.target);
+    const email = formData.get("email");
+    const password = formData.get("password");
+
+    if (!email || !password) return;
 
     try {
       const { data } = await signIn({ variables: { email, password } });
@@ -36,29 +38,55 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-brand">
-          <div className="auth-brand-icon">M</div>
-          <h2>Welcome back</h2>
-          <p>Sign in to your Minicom account</p>
+    <div className="flex items-center justify-center min-h-screen p-6 bg-gradient-to-br from-gray-50 via-indigo-50/50 to-purple-50/30">
+      <div className="w-full max-w-[400px] bg-white rounded-2xl p-10 shadow-lg border border-gray-100">
+        <div className="text-center mb-8">
+          <div className="w-12 h-12 bg-accent rounded-xl inline-flex items-center justify-center text-white text-[22px] font-bold mb-4">
+            M
+          </div>
+          <h2 className="text-[22px] font-bold text-gray-900 mb-1">Welcome back</h2>
+          <p className="text-sm text-gray-500">Sign in to your Minicom account</p>
         </div>
-        {error && <div className="auth-error">{error}</div>}
-        <form onSubmit={handleSubmit} className="auth-form">
-          <sl-input label="Email" name="email" type="email" required />
-          <sl-input label="Password" name="password" type="password" required />
-          <sl-button
+
+        {error && (
+          <div className="bg-red-50 text-red-500 px-3.5 py-2.5 rounded-lg text-[13px] font-medium mb-4">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+            <input
+              type="email"
+              name="email"
+              required
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none transition"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+            <input
+              type="password"
+              name="password"
+              required
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-accent/30 focus:border-accent outline-none transition"
+            />
+          </div>
+          <button
             type="submit"
-            variant="primary"
-            className="auth-submit"
-            style={{ width: "100%" }}
-            loading={loading || undefined}
+            disabled={loading}
+            className="mt-2 w-full bg-accent hover:bg-accent-hover text-white font-semibold py-2.5 rounded-lg text-sm transition disabled:opacity-50"
           >
-            Sign In
-          </sl-button>
+            {loading ? "Signing in..." : "Sign In"}
+          </button>
         </form>
-        <div className="auth-footer">
-          Don't have an account? <Link to="/signup">Create one</Link>
+
+        <div className="text-center mt-5 text-[13px] text-gray-500">
+          Don't have an account?{" "}
+          <Link to="/signup" className="text-accent hover:underline font-medium">
+            Create one
+          </Link>
         </div>
       </div>
     </div>

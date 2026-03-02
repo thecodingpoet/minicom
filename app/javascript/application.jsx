@@ -4,12 +4,6 @@ import { ApolloProvider } from "@apollo/client/react";
 import App from "./App";
 import client from "./utils/apollo";
 
-import { setBasePath } from "@shoelace-style/shoelace/dist/utilities/base-path.js";
-setBasePath(
-  "https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.20.1/cdn/"
-);
-import "@shoelace-style/shoelace/dist/shoelace-autoloader.js";
-
 const root = createRoot(document.getElementById("root"));
 root.render(
   <ApolloProvider client={client}>
