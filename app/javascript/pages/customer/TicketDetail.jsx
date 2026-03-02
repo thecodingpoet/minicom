@@ -44,21 +44,29 @@ export default function CustomerTicketDetail() {
         </div>
       </div>
 
-      {ticket.attachments.length > 0 && (
+      {ticket.attachments?.length > 0 && (
         <div className="mt-1">
           <h3 className="text-sm font-semibold mb-2.5">Attachments</h3>
-          <div className="flex gap-2 flex-wrap">
-            {ticket.attachments.map((att, i) => (
-              <a
-                key={i}
-                href={att.url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 bg-white border border-gray-200 rounded-lg px-3.5 py-2 text-[13px] text-accent hover:bg-accent-light transition no-underline"
-              >
-                📎 {att.filename}
-              </a>
-            ))}
+          <div className="flex gap-3 flex-wrap">
+            {ticket.attachments.map((att, i) => {
+              const isImage = att.contentType?.startsWith("image/");
+              return (
+                <a
+                  key={i}
+                  href={att.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex flex-col items-center gap-1.5 bg-white border border-gray-200 rounded-lg p-2 text-[13px] text-accent hover:bg-accent-light transition no-underline min-w-[80px]"
+                >
+                  {isImage ? (
+                    <img src={att.url} alt={att.filename} className="w-16 h-16 object-cover rounded-md" />
+                  ) : (
+                    <span className="w-16 h-16 flex items-center justify-center bg-gray-100 rounded-md text-2xl">📄</span>
+                  )}
+                  <span className="text-gray-700 truncate w-full text-center text-xs">{att.filename}</span>
+                </a>
+              );
+            })}
           </div>
         </div>
       )}

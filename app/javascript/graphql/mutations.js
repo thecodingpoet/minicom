@@ -49,8 +49,8 @@ export const SIGN_IN = gql`
 `;
 
 export const CREATE_TICKET = gql`
-  mutation CreateTicket($subject: String!, $description: String!) {
-    createTicket(input: { subject: $subject, description: $description }) {
+  mutation CreateTicket($subject: String!, $description: String!, $attachments: [Upload!]) {
+    createTicket(input: { subject: $subject, description: $description, attachments: $attachments }) {
       ticket {
         id
         subject

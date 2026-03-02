@@ -5,7 +5,9 @@ module Types
     field :content_type, String, null: false
 
     def url
-      Rails.application.routes.url_helpers.rails_blob_url(object, host: "localhost:3000")
+      opts = Rails.application.config.action_mailer.default_url_options || { host: "localhost", port: 3000 }
+      host = opts[:port] ? "#{opts[:host]}:#{opts[:port]}" : opts[:host]
+      Rails.application.routes.url_helpers.rails_blob_url(object, host: host)
     end
 
     def filename
