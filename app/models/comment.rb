@@ -6,8 +6,15 @@ class Comment < ApplicationRecord
   validate :customer_can_comment
 
   after_create :claim_ticket_if_agent
+  after_commit :broadcast_ticket_update, on: :create
 
   private
+
+  def broadcast_ticket_update
+    TicketChannel.broadcast_to(ticket, { type: "update" })
+  rescue StandardError => e
+    Rails.logger.error("TicketChannel broadcast failed: #{e.message}")
+  end
 
   def customer_can_comment
     return unless user&.customer?

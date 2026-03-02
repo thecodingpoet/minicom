@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { GET_TICKET } from "../../graphql/queries";
@@ -7,13 +8,19 @@ import Avatar from "../../components/Avatar";
 import CommentThread from "../../components/CommentThread";
 import AttachmentStrip from "../../components/AttachmentStrip";
 import Spinner from "../../components/Spinner";
+import { createTicketSubscription } from "../../utils/actionCable";
 
 export default function AgentTicketDetail() {
   const { id } = useParams();
 
-  const { data, loading, error } = useQuery(GET_TICKET, {
+  const { data, loading, error, refetch } = useQuery(GET_TICKET, {
     variables: { id },
   });
+
+  useEffect(() => {
+    if (!id) return;
+    return createTicketSubscription(id, () => refetch());
+  }, [id, refetch]);
 
   const [updateStatus] = useMutation(UPDATE_TICKET_STATUS, {
     refetchQueries: [{ query: GET_TICKET, variables: { id } }],

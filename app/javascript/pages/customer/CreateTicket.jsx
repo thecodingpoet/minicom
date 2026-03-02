@@ -3,6 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { useMutation } from "@apollo/client/react";
 import { useNavigate, Link } from "react-router-dom";
 import { CREATE_TICKET } from "../../graphql/mutations";
+import { GET_TICKETS } from "../../graphql/queries";
 
 const ACCEPT = {
   "image/jpeg": [".jpg", ".jpeg"],
@@ -18,7 +19,9 @@ export default function CreateTicket() {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const navigate = useNavigate();
 
-  const [createTicket, { loading }] = useMutation(CREATE_TICKET);
+  const [createTicket, { loading }] = useMutation(CREATE_TICKET, {
+    refetchQueries: [{ query: GET_TICKETS }],
+  });
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: ACCEPT,

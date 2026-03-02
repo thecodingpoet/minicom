@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client/react";
 import { GET_TICKETS } from "../../graphql/queries";
 import TicketCard from "../../components/TicketCard";
 import Spinner from "../../components/Spinner";
+import { createInboxSubscription } from "../../utils/actionCable";
 
 const STATUS_FILTERS = [
   { value: "", label: "All" },
@@ -21,12 +22,16 @@ export default function AgentDashboard() {
   const [statusFilter, setStatusFilter] = useState("");
   const [assignmentFilter, setAssignmentFilter] = useState("");
 
-  const { data, loading, error } = useQuery(GET_TICKETS, {
+  const { data, loading, error, refetch } = useQuery(GET_TICKETS, {
     variables: {
       status: statusFilter || undefined,
       assignment: assignmentFilter || undefined,
     },
   });
+
+  useEffect(() => {
+    return createInboxSubscription(() => refetch());
+  }, [refetch]);
 
   if (loading) return <Spinner />;
   if (error) return <div className="bg-red-50 text-red-500 px-3.5 py-2.5 rounded-lg text-[13px] font-medium">{error.message}</div>;
