@@ -6,6 +6,25 @@ module Types
       context[:current_user]
     end
 
+    field :ticket_counts, Types::TicketCountsType, null: false do
+      argument :assignment, String, required: false
+    end
+
+    def ticket_counts(assignment: nil)
+      raise GraphQL::ExecutionError, "Authentication required" unless context[:current_user]
+      return { open: 0, in_progress: 0, closed: 0, all: 0 } if context[:current_user].customer?
+
+      scope = Ticket.all
+      scope = apply_assignment_scope(scope, assignment)
+
+      {
+        open: scope.where(status: "open").count,
+        in_progress: scope.where(status: "in_progress").count,
+        closed: scope.where(status: "closed").count,
+        all: scope.count
+      }
+    end
+
     field :tickets, [ Types::TicketType ], null: false do
       argument :status, String, required: false
       argument :assignment, String, required: false
@@ -32,6 +51,19 @@ module Types
       end
 
       scope.includes(:customer, :assigned_agent).order(created_at: :desc)
+    end
+
+    def apply_assignment_scope(scope, assignment)
+      return scope unless context[:current_user]&.agent? && assignment.present?
+
+      case assignment
+      when "mine"
+        scope.where(assigned_agent_id: context[:current_user].id)
+      when "unassigned"
+        scope.unassigned
+      else
+        scope
+      end
     end
 
     field :ticket, Types::TicketType, null: true do

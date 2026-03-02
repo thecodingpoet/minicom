@@ -1,5 +1,16 @@
 import { gql } from "@apollo/client/core";
 
+export const GET_TICKET_COUNTS = gql`
+  query GetTicketCounts($assignment: String) {
+    ticketCounts(assignment: $assignment) {
+      open
+      inProgress
+      closed
+      all
+    }
+  }
+`;
+
 export const GET_TICKETS = gql`
   query GetTickets($status: String, $assignment: String) {
     tickets(status: $status, assignment: $assignment) {

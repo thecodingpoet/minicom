@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client/react";
-import { GET_TICKET } from "../../graphql/queries";
+import { GET_TICKET, GET_TICKETS, GET_TICKET_COUNTS } from "../../graphql/queries";
 import { UPDATE_TICKET_STATUS, CREATE_COMMENT } from "../../graphql/mutations";
 import { StatusPill } from "../../components/StatusDot";
 import Avatar from "../../components/Avatar";
@@ -34,7 +34,11 @@ export default function AgentTicketDetail() {
   }, [id, refetch]);
 
   const [updateStatus] = useMutation(UPDATE_TICKET_STATUS, {
-    refetchQueries: [{ query: GET_TICKET, variables: { id } }],
+    refetchQueries: [
+      { query: GET_TICKET, variables: { id } },
+      { query: GET_TICKETS },
+      { query: GET_TICKET_COUNTS },
+    ],
   });
 
   const [createComment, { loading: sending }] = useMutation(CREATE_COMMENT, {

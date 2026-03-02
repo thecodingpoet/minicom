@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@apollo/client/react";
 import { useMatch } from "react-router-dom";
-import { GET_TICKETS } from "../../graphql/queries";
+import { GET_TICKETS, GET_TICKET_COUNTS } from "../../graphql/queries";
 import TicketCard from "../../components/TicketCard";
 import Spinner from "../../components/Spinner";
 import { createInboxSubscription } from "../../utils/actionCable";
@@ -97,20 +97,26 @@ export default function AgentDashboard() {
     },
   });
 
+  const { data: countsData, refetch: refetchCounts } = useQuery(GET_TICKET_COUNTS, {
+    variables: { assignment: assignmentFilter || undefined },
+  });
+
   useEffect(() => {
-    return createInboxSubscription(() => refetch());
-  }, [refetch]);
+    return createInboxSubscription(() => {
+      refetch();
+      refetchCounts();
+    });
+  }, [refetch, refetchCounts]);
 
   const tickets = data?.tickets || [];
-  const openCount = tickets.filter((t) => t.status === "open").length;
-  const inProgressCount = tickets.filter((t) => t.status === "in_progress").length;
-  const closedCount = tickets.filter((t) => t.status === "closed").length;
+  const counts = countsData?.ticketCounts;
 
   const countFor = (value) => {
-    if (value === "open") return openCount;
-    if (value === "in_progress") return inProgressCount;
-    if (value === "closed") return closedCount;
-    return tickets.length;
+    if (!counts) return 0;
+    if (value === "open") return counts.open;
+    if (value === "in_progress") return counts.inProgress;
+    if (value === "closed") return counts.closed;
+    return counts.all;
   };
 
   return (
@@ -126,7 +132,7 @@ export default function AgentDashboard() {
               onChange={setAssignmentFilter}
             />
           </div>
-          <span className="text-[13px] text-gray-400 font-medium">{tickets.length}</span>
+          <span className="text-[13px] text-gray-400 font-medium">{counts?.all ?? tickets.length}</span>
         </div>
 
         {/* Status filter pills — single row */}

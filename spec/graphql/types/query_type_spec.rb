@@ -39,6 +39,72 @@ RSpec.describe Types::QueryType, type: :graphql do
     end
   end
 
+  describe "ticketCounts" do
+    let(:query) do
+      <<~GQL
+        query TicketCounts($assignment: String) {
+          ticketCounts(assignment: $assignment) {
+            open
+            inProgress
+            closed
+            all
+          }
+        }
+      GQL
+    end
+
+    it "returns zero counts for customer" do
+      customer = create(:user)
+      create(:ticket, customer: customer)
+
+      result = execute_graphql(
+        query: query,
+        variables: {},
+        context: { current_user: customer }
+      )
+
+      expect(result["errors"]).to be_nil
+      expect(result["data"]["ticketCounts"]).to eq(
+        "open" => 0, "inProgress" => 0, "closed" => 0, "all" => 0
+      )
+    end
+
+    it "returns correct counts for agent" do
+      agent = create(:user, :agent)
+      create(:ticket, status: :open)
+      create(:ticket, status: :open)
+      create(:ticket, status: :in_progress)
+      create(:ticket, status: :closed)
+
+      result = execute_graphql(
+        query: query,
+        variables: {},
+        context: { current_user: agent }
+      )
+
+      expect(result["errors"]).to be_nil
+      expect(result["data"]["ticketCounts"]["open"]).to eq(2)
+      expect(result["data"]["ticketCounts"]["inProgress"]).to eq(1)
+      expect(result["data"]["ticketCounts"]["closed"]).to eq(1)
+      expect(result["data"]["ticketCounts"]["all"]).to eq(4)
+    end
+
+    it "respects assignment filter" do
+      agent = create(:user, :agent)
+      my_ticket = create(:ticket, status: :open, assigned_agent: agent)
+      create(:ticket, status: :open, assigned_agent_id: nil)
+
+      result = execute_graphql(
+        query: query,
+        variables: { assignment: "mine" },
+        context: { current_user: agent }
+      )
+
+      expect(result["errors"]).to be_nil
+      expect(result["data"]["ticketCounts"]["all"]).to eq(1)
+    end
+  end
+
   describe "tickets" do
     let(:query) do
       <<~GQL
