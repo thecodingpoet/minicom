@@ -16,8 +16,18 @@ RSpec.describe Ticket, type: :model do
   end
 
   describe "scopes" do
+    let!(:open_ticket) { create(:ticket, status: :open) }
+    let!(:in_progress_ticket) { create(:ticket, status: :in_progress) }
+    let!(:closed_ticket) { create(:ticket, :closed) }
     let!(:assigned_ticket) { create(:ticket, :assigned) }
     let!(:unassigned_ticket) { create(:ticket, assigned_agent_id: nil) }
+
+    describe ".active" do
+      it "returns tickets with open or in_progress status" do
+        expect(described_class.active).to include(open_ticket, in_progress_ticket)
+        expect(described_class.active).not_to include(closed_ticket)
+      end
+    end
 
     describe ".assigned" do
       it "returns tickets with an assigned agent" do
@@ -30,6 +40,31 @@ RSpec.describe Ticket, type: :model do
       it "returns tickets without an assigned agent" do
         expect(described_class.unassigned).to include(unassigned_ticket)
         expect(described_class.unassigned).not_to include(assigned_ticket)
+      end
+    end
+
+    describe ".assigned_to_or_unassigned" do
+      let(:agent) { create(:user, :agent) }
+
+      it "returns active tickets assigned to the agent" do
+        ticket = create(:ticket, :assigned, assigned_agent: agent)
+        expect(described_class.assigned_to_or_unassigned(agent)).to include(ticket)
+      end
+
+      it "returns active unassigned tickets" do
+        ticket = create(:ticket, assigned_agent_id: nil)
+        expect(described_class.assigned_to_or_unassigned(agent)).to include(ticket)
+      end
+
+      it "excludes active tickets assigned to another agent" do
+        other_agent = create(:user, :agent)
+        ticket = create(:ticket, :assigned, assigned_agent: other_agent)
+        expect(described_class.assigned_to_or_unassigned(agent)).not_to include(ticket)
+      end
+
+      it "excludes closed tickets" do
+        ticket = create(:ticket, :closed, assigned_agent: agent)
+        expect(described_class.assigned_to_or_unassigned(agent)).not_to include(ticket)
       end
     end
   end
