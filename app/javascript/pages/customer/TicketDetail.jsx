@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@apollo/client/react";
 import { GET_TICKET } from "../../graphql/queries";
 import { useAuth } from "../../utils/auth";
+import { isAgent } from "../../constants/roles";
 import { StatusPill } from "../../components/StatusDot";
 import CommentThread from "../../components/CommentThread";
 import AttachmentStrip from "../../components/AttachmentStrip";
@@ -28,8 +29,8 @@ export default function CustomerTicketDetail() {
   const ticket = data?.ticket;
   if (!ticket) return <p>Ticket not found.</p>;
 
-  const hasAgentComment = ticket.comments.some((c) => c.user.role === "agent");
-  const canComment = user?.role === "agent" || hasAgentComment;
+  const hasAgentComment = ticket.comments.some((c) => isAgent(c.user));
+  const canComment = isAgent(user) || hasAgentComment;
 
   return (
     <div className="flex flex-col gap-5">

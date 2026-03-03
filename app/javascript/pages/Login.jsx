@@ -3,6 +3,7 @@ import { useMutation } from "@apollo/client/react";
 import { useNavigate, Link } from "react-router-dom";
 import { SIGN_IN } from "../graphql/mutations";
 import { useAuth } from "../utils/auth";
+import { isCustomer } from "../constants/roles";
 
 export default function Login() {
   const [error, setError] = useState("");
@@ -31,7 +32,7 @@ export default function Login() {
       }
 
       login(result.token, result.user);
-      navigate(result.user.role === "agent" ? "/agent" : "/");
+      navigate(isCustomer(result.user) ? "/" : "/agent");
     } catch (err) {
       setError(err.message);
     }

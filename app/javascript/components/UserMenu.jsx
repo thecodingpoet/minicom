@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../utils/auth";
+import { isAgent } from "../constants/roles";
 import Avatar from "./Avatar";
 
 export default function UserMenu() {
@@ -62,7 +63,7 @@ export default function UserMenu() {
             <div className="text-xs text-gray-500 mt-1">{user.email}</div>
           </div>
 
-          {user.role === "agent" && (
+          {isAgent(user) && (
             <div className="py-1">
               <button
                 onClick={handleSettings}

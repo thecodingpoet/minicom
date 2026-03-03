@@ -8,6 +8,7 @@ import Avatar from "../../components/Avatar";
 import AttachmentStrip from "../../components/AttachmentStrip";
 import Spinner from "../../components/Spinner";
 import { createTicketSubscription } from "../../utils/actionCable";
+import { isAgent } from "../../constants/roles";
 
 function formatTime(dateStr) {
   return new Date(dateStr).toLocaleString(undefined, {
@@ -174,22 +175,22 @@ export default function AgentTicketDetail() {
             </div>
           )}
           {ticket.comments.map((comment) => {
-            const isAgent = comment.user.role === "agent";
+            const isAgentComment = isAgent(comment.user);
             return (
               <div
                 key={comment.id}
                 className={`flex gap-2.5 max-w-[80%] ${
-                  isAgent ? "self-end flex-row-reverse" : "self-start"
+                  isAgentComment ? "self-end flex-row-reverse" : "self-start"
                 }`}
               >
                 <Avatar name={comment.user.fullName} size="sm" />
-                <div className={`flex flex-col gap-1 ${isAgent ? "items-end" : ""}`}>
+                <div className={`flex flex-col gap-1 ${isAgentComment ? "items-end" : ""}`}>
                   <span className="text-xs font-semibold text-gray-500 px-1">
                     {comment.user.fullName}
                   </span>
                   <div
                     className={`px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words rounded-[18px] ${
-                      isAgent
+                      isAgentComment
                         ? "rounded-br-md bg-sky-100 text-slate-800 border border-sky-200"
                         : "rounded-bl-md bg-gray-100 text-gray-900 border border-gray-200"
                     }`}

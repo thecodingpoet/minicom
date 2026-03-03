@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate, useParams } from "react-router-dom";
 import { AuthProvider, useAuth } from "./utils/auth";
+import { ROLES } from "./constants/roles";
 import Layout from "./components/Layout";
 import AgentLayout from "./components/AgentLayout";
 import Spinner from "./components/Spinner";
@@ -26,7 +27,7 @@ function RootRedirect() {
 
   if (loading) return <Spinner />;
   if (!user) return <Navigate to="/login" />;
-  if (user.role === "agent") return <Navigate to="/agent" />;
+  if (user.role === ROLES.AGENT) return <Navigate to="/agent" />;
 
   return <CustomerDashboard />;
 }
@@ -34,7 +35,7 @@ function RootRedirect() {
 function TicketDetailRouter() {
   const { user } = useAuth();
   const { id } = useParams();
-  if (user?.role === "agent") return <Navigate to={`/agent/tickets/${id}`} replace />;
+  if (user?.role === ROLES.AGENT) return <Navigate to={`/agent/tickets/${id}`} replace />;
   return <CustomerTicketDetail />;
 }
 
@@ -48,7 +49,7 @@ function AppRoutes() {
       <Route
         path="/agent"
         element={
-          <PrivateRoute role="agent">
+          <PrivateRoute role={ROLES.AGENT}>
             <AgentLayout />
           </PrivateRoute>
         }
@@ -73,7 +74,7 @@ function AppRoutes() {
         <Route
           path="/tickets/new"
           element={
-            <PrivateRoute role="customer">
+            <PrivateRoute role={ROLES.CUSTOMER}>
               <CreateTicket />
             </PrivateRoute>
           }

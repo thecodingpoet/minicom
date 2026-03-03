@@ -5,6 +5,7 @@ import { GET_NOTIFICATIONS, GET_UNREAD_NOTIFICATIONS_COUNT, GET_TICKET } from ".
 import { MARK_NOTIFICATION_AS_READ, MARK_ALL_NOTIFICATIONS_AS_READ } from "../graphql/mutations";
 import { createNotificationSubscription } from "../utils/actionCable";
 import { useAuth } from "../utils/auth";
+import { isAgent } from "../constants/roles";
 
 function timeAgo(dateStr) {
   const seconds = Math.floor((Date.now() - new Date(dateStr)) / 1000);
@@ -109,8 +110,8 @@ export default function NotificationBell() {
     }
     setOpen(false);
     if (notification.ticketId) {
-      const isAgent = user?.role === "agent";
-      const ticketPath = isAgent
+      const isAgentUser = isAgent(user);
+      const ticketPath = isAgentUser
         ? `/agent/tickets/${notification.ticketId}`
         : `/tickets/${notification.ticketId}`;
       if (location.pathname === ticketPath) {

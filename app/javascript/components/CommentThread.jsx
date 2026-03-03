@@ -3,6 +3,7 @@ import { useMutation } from "@apollo/client/react";
 import { CREATE_COMMENT } from "../graphql/mutations";
 import { GET_TICKET } from "../graphql/queries";
 import Avatar from "./Avatar";
+import { isAgent } from "../constants/roles";
 
 function formatTime(dateStr) {
   return new Date(dateStr).toLocaleString(undefined, {
@@ -52,27 +53,27 @@ export default function CommentThread({ comments, ticketId, canComment, currentU
         )}
 
         {comments.map((comment) => {
-          const isAgent = comment.user.role === "agent";
+          const isAgentComment = isAgent(comment.user);
           return (
             <div
               key={comment.id}
               className={`flex gap-2.5 max-w-[80%] ${
-                isAgent ? "self-end flex-row-reverse" : "self-start"
+                isAgentComment ? "self-end flex-row-reverse" : "self-start"
               }`}
             >
               <Avatar name={comment.user.fullName} size="sm" />
-              <div className={`flex flex-col gap-1 ${isAgent ? "items-end" : ""}`}>
+              <div className={`flex flex-col gap-1 ${isAgentComment ? "items-end" : ""}`}>
                 <span className="text-xs font-semibold text-gray-500 px-1">
                   {comment.user.fullName}
                 </span>
                 <div
                   className={`px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap break-words rounded-[18px] ${
-                    isAgent
+                    isAgentComment
                       ? "rounded-br-md"
                       : "rounded-bl-md bg-gray-100 text-gray-900 border border-gray-200"
                   }`}
                   style={
-                    isAgent
+                    isAgentComment
                       ? { backgroundColor: "#e0f2fe", color: "#1e293b", border: "1px solid #bae6fd" }
                       : undefined
                   }

@@ -1,4 +1,5 @@
 import { useAuth } from "../utils/auth";
+import { isCustomer } from "../constants/roles";
 import { useNavigate, Outlet } from "react-router-dom";
 import UserMenu from "./UserMenu";
 import NotificationBell from "./NotificationBell";
@@ -13,7 +14,7 @@ export default function Layout() {
         <div className="flex items-center gap-6">
           <div
             className="flex items-center gap-2 cursor-pointer"
-            onClick={() => navigate(user?.role === "agent" ? "/agent" : "/")}
+            onClick={() => navigate(isCustomer(user) ? "/" : "/agent")}
           >
             <span className="text-lg font-bold text-accent tracking-tight">Minicom</span>
           </div>

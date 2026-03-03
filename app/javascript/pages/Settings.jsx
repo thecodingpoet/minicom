@@ -1,5 +1,6 @@
 import { useMutation } from "@apollo/client/react";
 import { useAuth } from "../utils/auth";
+import { isAgent } from "../constants/roles";
 import { EXPORT_CLOSED_TICKETS } from "../graphql/mutations";
 
 export default function Settings() {
@@ -35,7 +36,7 @@ export default function Settings() {
       <h2 className="text-xl font-bold mb-6">Settings</h2>
 
       {/* Export section — agents only */}
-      {user.role === "agent" && (
+      {isAgent(user) && (
         <div className="bg-white border border-gray-200 rounded-2xl p-6">
           <h3 className="text-[13px] font-semibold uppercase tracking-wider text-gray-400 mb-4">
             Data Export
