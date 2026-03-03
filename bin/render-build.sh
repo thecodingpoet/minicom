@@ -2,10 +2,10 @@
 set -o errexit
 
 bundle install
-yarn install
+npm ci
 
-yarn build
-yarn build:css
+npm run build
+npm run build:css
 bundle exec rails assets:precompile
 bundle exec rails assets:clean
 
