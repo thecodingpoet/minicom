@@ -1,50 +1,83 @@
+if Rails.env.production?
+  puts "Seeds are disabled in production."
+  exit
+end
+
+SEED_PASSWORD = ENV.fetch("SEED_PASSWORD", "password123")
+
 puts "Seeding database..."
 
-agent1 = User.find_or_create_by!(email: "agent@minicom.com") do |u|
-  u.password = "password123"
-  u.password_confirmation = "password123"
-  u.first_name = "Sarah"
-  u.last_name = "Agent"
-  u.role = :agent
-end
+ActiveRecord::Base.transaction do
+  if Rails.env.development?
+    puts "  Cleaning database..."
+    DatabaseCleaner.strategy = :truncation
+    DatabaseCleaner.clean
+  end
 
-agent2 = User.find_or_create_by!(email: "agent2@minicom.com") do |u|
-  u.password = "password123"
-  u.password_confirmation = "password123"
-  u.first_name = "Mike"
-  u.last_name = "Support"
-  u.role = :agent
-end
+  agent1 = User.create!(
+    email: "agent@minicom.com",
+    password: SEED_PASSWORD,
+    password_confirmation: SEED_PASSWORD,
+    first_name: "Sarah",
+    last_name: "Agent",
+    role: :agent
+  )
 
-customer = User.find_or_create_by!(email: "customer@minicom.com") do |u|
-  u.password = "password123"
-  u.password_confirmation = "password123"
-  u.first_name = "John"
-  u.last_name = "Doe"
-  u.role = :customer
-end
+  agent2 = User.create!(
+    email: "agent2@minicom.com",
+    password: SEED_PASSWORD,
+    password_confirmation: SEED_PASSWORD,
+    first_name: "Mike",
+    last_name: "Support",
+    role: :agent
+  )
 
-ticket1 = Ticket.find_or_create_by!(subject: "Cannot login to my account") do |t|
-  t.customer = customer
-  t.description = "I've been trying to login since yesterday but keep getting an error message saying 'Invalid credentials' even though I'm sure my password is correct."
-  t.status = :open
-end
+  customer = User.create!(
+    email: "customer@minicom.com",
+    password: SEED_PASSWORD,
+    password_confirmation: SEED_PASSWORD,
+    first_name: "John",
+    last_name: "Doe",
+    role: :customer
+  )
 
-ticket2 = Ticket.find_or_create_by!(subject: "Billing discrepancy on invoice #1234") do |t|
-  t.customer = customer
-  t.assigned_agent = agent1
-  t.description = "My latest invoice shows a charge of $99 but I'm on the $49/month plan. Please correct this."
-  t.status = :in_progress
-end
+  puts "  Users ready"
 
-unless ticket2.comments.exists?
+  ticket1 = Ticket.create!(
+    customer: customer,
+    subject: "Cannot login to my account",
+    description: "I've been trying to login since yesterday but keep getting an error message saying 'Invalid credentials' even though I'm sure my password is correct.",
+    status: :open
+  )
+
+  ticket2 = Ticket.create!(
+    customer: customer,
+    assigned_agent: agent1,
+    subject: "Billing discrepancy on invoice #1234",
+    description: "My latest invoice shows a charge of $99 but I'm on the $49/month plan. Please correct this.",
+    status: :in_progress
+  )
+
+  ticket3 = Ticket.create!(
+    customer: customer,
+    assigned_agent: agent1,
+    subject: "Password reset request",
+    description: "I forgot my password and need help resetting it. I've tried the 'Forgot password' link but never received the email.",
+    status: :closed
+  )
+
+  puts "  Tickets ready: open, in progress, closed"
+
   ticket2.comments.create!(user: agent1, body: "Hi John, thanks for reporting this. Let me look into your billing history and get back to you shortly.")
   ticket2.comments.create!(user: customer, body: "Thank you, I appreciate the quick response!")
+
+  ticket3.comments.create!(user: agent1, body: "Glad we could help. Your password has been reset successfully.")
+  ticket3.comments.create!(user: customer, body: "All set now, thanks!")
+
+  puts "  Comments ready"
 end
 
-puts "Seeded: #{User.count} users, #{Ticket.count} tickets, #{Comment.count} comments"
+puts "Done. #{User.count} users, #{Ticket.count} tickets, #{Comment.count} comments"
 puts ""
-puts "Login credentials:"
-puts "  Agent:    agent@minicom.com / password123"
-puts "  Agent 2:  agent2@minicom.com / password123"
-puts "  Customer: customer@minicom.com / password123"
+puts "Login: agent@minicom.com | agent2@minicom.com | customer@minicom.com"
+puts "Password: #{SEED_PASSWORD}"

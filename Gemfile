@@ -23,6 +23,7 @@ gem "mission_control-jobs"
 gem "dotenv-rails"
 
 group :development, :test do
+  gem "database_cleaner-active_record"
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false

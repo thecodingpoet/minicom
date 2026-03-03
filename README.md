@@ -27,11 +27,11 @@ A ticket support system built with Rails 8, GraphQL, and ActionCable.
 
 3. **Environment variables (optional)**
 
-   If you need access to the Mission Control Jobs dashboard at `/jobs`:
-
    ```bash
    cp .env.example .env
    ```
+
+   Optionally set `SEED_PASSWORD` (default: `password123`) for seeded accounts and `MISSION_CONTROL_JOBS_*` credentials for the Jobs dashboard at `/jobs`.
 
 4. **Start the server**
 
