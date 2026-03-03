@@ -45,7 +45,6 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
 
-      {/* Agent routes — Intercom-style panel layout */}
       <Route
         path="/agent"
         element={
@@ -58,7 +57,6 @@ function AppRoutes() {
         <Route path="tickets/:id" element={<AgentTicketDetail />} />
       </Route>
 
-      {/* Customer & shared routes — classic layout */}
       <Route element={<Layout />}>
         <Route path="/" element={<RootRedirect />} />
 
