@@ -80,6 +80,4 @@ test:
 #
 production:
   <<: *default
-  database: minicom_production
-  username: minicom
-  password: <%= ENV["MINICOM_DATABASE_PASSWORD"] %>
+  url: <%= ENV["DATABASE_URL"] %>
