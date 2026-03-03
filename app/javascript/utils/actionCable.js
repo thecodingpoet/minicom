@@ -57,7 +57,7 @@ export function createInboxSubscription(onUpdate) {
     { channel: "InboxChannel" },
     {
       received(data) {
-        if (data.type === "new_ticket") {
+        if (data.type === "new_ticket" || data.type === "ticket_updated") {
           onUpdate();
         }
       },

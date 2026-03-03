@@ -50,7 +50,8 @@ module Types
         end
       end
 
-      scope.includes(:customer, :assigned_agent).order(created_at: :desc)
+      scope.includes(:customer, :assigned_agent)
+           .order(Arel.sql("CASE WHEN status = 2 THEN 1 ELSE 0 END"), created_at: :desc)
     end
 
     def apply_assignment_scope(scope, assignment)

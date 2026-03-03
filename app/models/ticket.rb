@@ -37,6 +37,7 @@ class Ticket < ApplicationRecord
   def broadcast_ticket
     return unless saved_change_to_status? || saved_change_to_assigned_agent_id?
     TicketChannel.broadcast_to(self, { type: "update" })
+    ActionCable.server.broadcast("inbox", { type: "ticket_updated" })
   rescue StandardError => e
     Rails.logger.error("TicketChannel broadcast failed: #{e.message}")
   end
