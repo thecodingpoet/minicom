@@ -48,7 +48,7 @@ A ticket support system built with Rails 8, GraphQL, and ActionCable.
 
 ## Seed Users
 
-After running `bin/rails db:seed`, you can log in with these accounts (password: `password123` unless overridden by `SEED_PASSWORD`):
+Seed users are only created in development. After running `bin/rails db:seed`, you can log in with these accounts (password: `password123` unless overridden by `SEED_PASSWORD`):
 
 | Role     | Email               | Name         |
 |----------|---------------------|--------------|
