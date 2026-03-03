@@ -79,9 +79,6 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [ :id ]
 
-  # Allow Railway and Render health checks and app traffic.
-  config.hosts << "healthcheck.railway.app"
-  config.hosts << /.+\.railway\.app/
-  config.hosts << /.+\.up\.railway\.app/
+  # Allow Render health checks and app traffic.
   config.hosts << /.+\.onrender\.com/
 end
