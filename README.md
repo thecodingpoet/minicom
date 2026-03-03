@@ -46,6 +46,16 @@ A ticket support system built with Rails 8, GraphQL, and ActionCable.
    - Mission Control Jobs: http://localhost:3000/jobs (requires `.env` credentials)
    - ActionCable: ws://localhost:3000/cable
 
+## Seed Users
+
+After running `bin/rails db:seed`, you can log in with these accounts (password: `password123` unless overridden by `SEED_PASSWORD`):
+
+| Role     | Email               | Name         |
+|----------|---------------------|--------------|
+| Agent    | agent@minicom.com   | Sarah Agent  |
+| Agent    | agent2@minicom.com  | Mike Support |
+| Customer | customer@minicom.com| John Doe     |
+
 ## Running Tests
 
 ```bash
