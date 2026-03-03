@@ -25,25 +25,21 @@ A ticket support system built with Rails 8, GraphQL, and ActionCable.
    bin/rails db:seed   
    ```
 
-3. **Environment variables**
+3. **Environment variables (optional)**
 
-   Copy `.env.example` to `.env` and fill in the values:
+   If you need access to the Mission Control Jobs dashboard at `/jobs`:
 
    ```bash
    cp .env.example .env
    ```
 
-   | Variable | Description |
-   |----------|-------------|
-   | `MISSION_CONTROL_JOBS_USER` | Username for the Mission Control Jobs dashboard |
-   | `MISSION_CONTROL_JOBS_PASSWORD` | Password for the Mission Control Jobs dashboard |
-   | `SOLID_QUEUE_IN_PUMA` | Set to `true` to run Solid Queue inside the Puma process instead of as a separate worker |
-
 4. **Start the server**
 
    ```bash
-   bin/rails server
+   bin/dev
    ```
+
+   This starts the web server, Solid Queue worker, and JS/CSS watchers. For just the web server: `bin/rails server`.
 
    - App: http://localhost:3000
    - GraphiQL: http://localhost:3000/graphiql
