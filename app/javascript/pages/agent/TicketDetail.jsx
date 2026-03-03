@@ -115,7 +115,6 @@ export default function AgentTicketDetail() {
 
   return (
     <div className="flex flex-col h-full bg-white">
-      {/* Header bar */}
       <div className="shrink-0 border-b border-gray-200 px-5 py-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
@@ -147,9 +146,7 @@ export default function AgentTicketDetail() {
         </div>
       </div>
 
-      {/* Scrollable conversation area */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-5 py-5">
-        {/* Original ticket description */}
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-5">
           <p className="text-sm text-gray-900 leading-relaxed whitespace-pre-wrap">
             {ticket.description}
@@ -167,7 +164,6 @@ export default function AgentTicketDetail() {
           <AttachmentStrip attachments={ticket.attachments} />
         </div>
 
-        {/* Conversation messages */}
         <div className="flex flex-col gap-4">
           {ticket.comments.length === 0 && (
             <div className="text-center py-6 text-gray-400 text-[13px]">
@@ -207,7 +203,6 @@ export default function AgentTicketDetail() {
         </div>
       </div>
 
-      {/* Reply form — pinned at bottom */}
       <div className="shrink-0 border-t border-gray-200 bg-white px-5 py-3">
         <form onSubmit={handleSendReply} className="flex gap-2.5 items-end">
           <textarea

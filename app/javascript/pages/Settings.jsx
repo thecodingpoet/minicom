@@ -35,7 +35,6 @@ export default function Settings() {
     <div className="max-w-[640px]">
       <h2 className="text-xl font-bold mb-6">Settings</h2>
 
-      {/* Export section — agents only */}
       {isAgent(user) && (
         <div className="bg-white border border-gray-200 rounded-2xl p-6">
           <h3 className="text-[13px] font-semibold uppercase tracking-wider text-gray-400 mb-4">

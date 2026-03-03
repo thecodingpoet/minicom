@@ -121,7 +121,6 @@ export default function AgentDashboard() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header row: title + assignment scope dropdown + count */}
       <div className="shrink-0 px-5 pt-5 pb-3 flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -135,7 +134,6 @@ export default function AgentDashboard() {
           <span className="text-[13px] text-gray-400 font-medium">{counts?.all ?? tickets.length}</span>
         </div>
 
-        {/* Status filter pills — single row */}
         <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
           {STATUS_FILTERS.map(({ value, label, dot }) => {
             const active = statusFilter === value;
@@ -163,7 +161,6 @@ export default function AgentDashboard() {
         </div>
       </div>
 
-      {/* Scrollable ticket list */}
       <div className="flex-1 overflow-y-auto border-t border-gray-100">
         {loading ? (
           <Spinner />

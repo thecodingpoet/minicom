@@ -66,7 +66,7 @@ export default function SignUp() {
               <button
                 type="button"
                 onClick={() => setRole(ROLES.CUSTOMER)}
-                className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 text-center transition ${
+                className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 text-center cursor-pointer transition ${
                   role === ROLES.CUSTOMER
                     ? "border-accent bg-accent/5"
                     : "border-gray-200 bg-white hover:border-gray-300"
@@ -78,7 +78,7 @@ export default function SignUp() {
               <button
                 type="button"
                 onClick={() => setRole(ROLES.AGENT)}
-                className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 text-center transition ${
+                className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 text-center cursor-pointer transition ${
                   role === ROLES.AGENT
                     ? "border-accent bg-accent/5"
                     : "border-gray-200 bg-white hover:border-gray-300"
