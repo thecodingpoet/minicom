@@ -5,19 +5,21 @@ module Mutations
     argument :password_confirmation, String, required: true
     argument :first_name, String, required: true
     argument :last_name, String, required: true
+    argument :role, String, required: false
 
     field :token, String, null: true
     field :user, Types::UserType, null: true
     field :errors, [ String ], null: false
 
-    def resolve(email:, password:, password_confirmation:, first_name:, last_name:)
+    def resolve(email:, password:, password_confirmation:, first_name:, last_name:, role: nil)
+      role = role.to_s.in?(User.roles.keys) ? role.to_s : "customer"
       user = User.new(
         email: email,
         password: password,
         password_confirmation: password_confirmation,
         first_name: first_name,
         last_name: last_name,
-        role: :customer
+        role: role
       )
 
       if user.save

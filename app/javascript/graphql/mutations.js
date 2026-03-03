@@ -7,6 +7,7 @@ export const SIGN_UP = gql`
     $passwordConfirmation: String!
     $firstName: String!
     $lastName: String!
+    $role: String
   ) {
     signUp(
       input: {
@@ -15,6 +16,7 @@ export const SIGN_UP = gql`
         passwordConfirmation: $passwordConfirmation
         firstName: $firstName
         lastName: $lastName
+        role: $role
       }
     ) {
       token

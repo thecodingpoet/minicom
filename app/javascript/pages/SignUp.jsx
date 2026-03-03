@@ -3,9 +3,11 @@ import { useMutation } from "@apollo/client/react";
 import { useNavigate, Link } from "react-router-dom";
 import { SIGN_UP } from "../graphql/mutations";
 import { useAuth } from "../utils/auth";
+import { ROLES } from "../constants/roles";
 
 export default function SignUp() {
   const [error, setError] = useState("");
+  const [role, setRole] = useState(ROLES.CUSTOMER);
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -22,6 +24,7 @@ export default function SignUp() {
       email: formData.get("email"),
       password: formData.get("password"),
       passwordConfirmation: formData.get("passwordConfirmation"),
+      role,
     };
 
     try {
@@ -58,6 +61,34 @@ export default function SignUp() {
         )}
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setRole(ROLES.CUSTOMER)}
+                className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 text-center transition ${
+                  role === ROLES.CUSTOMER
+                    ? "border-accent bg-accent/5"
+                    : "border-gray-200 bg-white hover:border-gray-300"
+                }`}
+              >
+                <span className="text-base font-medium text-gray-900">Need help</span>
+                <span className="text-xs text-gray-500">Submit and track tickets</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole(ROLES.AGENT)}
+                className={`flex flex-col items-center gap-1.5 p-4 rounded-xl border-2 text-center transition ${
+                  role === ROLES.AGENT
+                    ? "border-accent bg-accent/5"
+                    : "border-gray-200 bg-white hover:border-gray-300"
+                }`}
+              >
+                <span className="text-base font-medium text-gray-900">Give help</span>
+                <span className="text-xs text-gray-500">Respond to customer tickets</span>
+              </button>
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1.5">First Name</label>

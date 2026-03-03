@@ -1,7 +1,7 @@
-# if Rails.env.production?
-#   puts "Seeds are disabled in production."
-#   exit
-# end
+if Rails.env.production?
+  puts "Seeds are disabled in production."
+  exit
+end
 
 SEED_PASSWORD = ENV.fetch("SEED_PASSWORD", "password123")
 

@@ -8,7 +8,7 @@ RSpec.describe Mutations::SignUp, type: :graphql do
       mutation SignUp($input: SignUpInput!) {
         signUp(input: $input) {
           token
-          user { id email firstName lastName }
+          user { id email firstName lastName role }
           errors
         }
       }
@@ -63,6 +63,32 @@ RSpec.describe Mutations::SignUp, type: :graphql do
     expect(data["token"]).to be_nil
     expect(data["user"]).to be_nil
     expect(data["errors"]).not_to be_empty
+  end
+
+  it "creates an agent when role is agent" do
+    result = execute_graphql(
+      query: mutation,
+      variables: {
+        input: {
+          email: "agent@example.com",
+          password: "password123",
+          passwordConfirmation: "password123",
+          firstName: "Support",
+          lastName: "Agent",
+          role: "agent"
+        }
+      },
+      context: {}
+    )
+
+    expect(result["errors"]).to be_nil
+    data = result["data"]["signUp"]
+    expect(data["token"]).to be_present
+    expect(data["user"]["email"]).to eq("agent@example.com")
+    expect(data["user"]["role"]).to eq("agent")
+    expect(data["errors"]).to eq([])
+
+    expect(User.find_by(email: "agent@example.com").agent?).to be true
   end
 
   it "returns errors for password mismatch" do
