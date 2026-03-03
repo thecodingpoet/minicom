@@ -91,6 +91,28 @@ RSpec.describe Mutations::UpdateTicketStatus, type: :graphql do
     expect(result["errors"].first["message"]).to include("Invalid status")
   end
 
+  it "creates ticket_closed notification for customer when agent closes unassigned ticket" do
+    ticket = create(:ticket, status: :open, assigned_agent_id: nil)
+    agent = create(:user, :agent)
+
+    allow(NotificationChannel).to receive(:broadcast_to)
+    allow(ActionCable.server).to receive(:broadcast)
+    allow(TicketChannel).to receive(:broadcast_to)
+
+    expect {
+      execute_graphql(
+        query: mutation,
+        variables: { input: { ticketId: ticket.id.to_s, status: "closed" } },
+        context: { current_user: agent }
+      )
+    }.to change { Notification.count }.by(1)
+
+    notification = Notification.last
+    expect(notification.recipient).to eq(ticket.customer)
+    expect(notification.actor).to eq(agent)
+    expect(notification.action).to eq("ticket_closed")
+  end
+
   it "raises when trying to reopen closed ticket" do
     ticket = create(:ticket, status: :closed)
     agent = create(:user, :agent)

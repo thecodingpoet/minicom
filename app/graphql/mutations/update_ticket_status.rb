@@ -16,7 +16,12 @@ module Mutations
       ticket = Ticket.find(ticket_id)
       raise GraphQL::ExecutionError, "Closed tickets cannot be reopened" if ticket.closed?
 
-      if ticket.update(status: status)
+      updates = { status: status }
+      if status == "closed" && ticket.assigned_agent_id.nil?
+        updates[:assigned_agent_id] = context[:current_user].id
+      end
+
+      if ticket.update(updates)
         { ticket: ticket, errors: [] }
       else
         { ticket: nil, errors: ticket.errors.full_messages }
