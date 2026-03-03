@@ -37,5 +37,5 @@ end
 group :development do
   gem "web-console"
   gem "letter_opener"
+  gem "graphiql-rails"
 end
-gem "graphiql-rails", group: :development
