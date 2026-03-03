@@ -15,6 +15,7 @@ gem "bootsnap", require: false
 gem "kamal", require: false
 gem "thruster", require: false
 
+gem "csv"
 gem "bcrypt", "~> 3.1.7"
 gem "jwt"
 gem "graphql"
