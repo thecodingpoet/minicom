@@ -63,7 +63,7 @@ ActiveRecord::Base.transaction do
     assigned_agent: agent1,
     subject: "Password reset request",
     description: "I forgot my password and need help resetting it. I've tried the 'Forgot password' link but never received the email.",
-    status: :closed
+    status: :in_progress
   )
 
   puts "  Tickets ready: open, in progress, closed"
@@ -73,6 +73,8 @@ ActiveRecord::Base.transaction do
 
   ticket3.comments.create!(user: agent1, body: "Glad we could help. Your password has been reset successfully.")
   ticket3.comments.create!(user: customer, body: "All set now, thanks!")
+
+  ticket3.update!(status: :closed)
 
   puts "  Comments ready"
 end

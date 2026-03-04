@@ -17,11 +17,12 @@ module Types
       scope = Ticket.all
       scope = apply_assignment_scope(scope, assignment)
 
+      counts = scope.group(:status).count
       {
-        open: scope.where(status: "open").count,
-        in_progress: scope.where(status: "in_progress").count,
-        closed: scope.where(status: "closed").count,
-        all: scope.count
+        open: counts["open"] || 0,
+        in_progress: counts["in_progress"] || 0,
+        closed: counts["closed"] || 0,
+        all: counts.values.sum
       }
     end
 
@@ -74,7 +75,9 @@ module Types
     def ticket(id:)
       raise GraphQL::ExecutionError, "Authentication required" unless context[:current_user]
 
-      ticket = Ticket.includes(:customer, :assigned_agent, comments: :user).find(id)
+      ticket = Ticket.includes(:customer, :assigned_agent, comments: :user)
+                    .with_attached_attachments
+                    .find(id)
 
       if context[:current_user].customer? && ticket.customer_id != context[:current_user].id
         raise GraphQL::ExecutionError, "Not authorized"
@@ -101,7 +104,7 @@ module Types
 
       scope = context[:current_user].notifications.recent
       scope = scope.unread if unread_only
-      scope.includes(:actor, :notifiable)
+      scope.includes(:actor, notifiable: { Comment: :ticket })
     end
 
     field :unread_notifications_count, Integer, null: false

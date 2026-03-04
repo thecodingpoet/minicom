@@ -10,6 +10,11 @@ module Mutations
       raise GraphQL::ExecutionError, "Authentication required" unless context[:current_user]
 
       ticket = Ticket.find(ticket_id)
+
+      if context[:current_user].customer?
+        raise GraphQL::ExecutionError, "Not authorized to comment on this ticket" unless ticket.customer_id == context[:current_user].id
+      end
+
       comment = ticket.comments.build(body: body, user: context[:current_user])
 
       if comment.save
