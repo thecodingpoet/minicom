@@ -1,10 +1,21 @@
+import { useEffect } from "react";
 import { Outlet, useNavigate, useMatch } from "react-router-dom";
 import UserMenu from "./UserMenu";
 import NotificationBell from "./NotificationBell";
 import AgentInbox from "../pages/agent/Dashboard";
+import { hasCompletedAgentTour, runAgentInboxTour } from "../utils/agentTour";
 
 export default function AgentLayout() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!hasCompletedAgentTour()) {
+      const timer = setTimeout(() => {
+        runAgentInboxTour(() => navigate("/settings"));
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [navigate]);
   const ticketMatch = useMatch("/agent/tickets/:id");
   const hasSelectedTicket = !!ticketMatch;
 

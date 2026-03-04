@@ -130,7 +130,7 @@ export default function NotificationBell() {
   };
 
   return (
-    <div className="relative" ref={panelRef}>
+    <div className="relative" ref={panelRef} data-tour="notification-bell">
       <button
         onClick={handleToggle}
         className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border-none bg-transparent"

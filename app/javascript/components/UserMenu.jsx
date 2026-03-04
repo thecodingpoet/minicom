@@ -34,7 +34,7 @@ export default function UserMenu() {
   };
 
   return (
-    <div className="relative" ref={menuRef}>
+    <div className="relative" ref={menuRef} data-tour="user-menu">
       <button
         onClick={() => setOpen((prev) => !prev)}
         className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer border-none bg-transparent"

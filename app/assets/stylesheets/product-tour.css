@@ -1,0 +1,95 @@
+.driver-popover.driver-popover-minicom {
+  padding: 20px;
+  border-radius: 12px;
+  min-width: 280px;
+  max-width: 320px;
+  box-shadow: 0 4px 24px rgb(0 0 0 / 0.12), 0 0 1px rgb(0 0 0 / 0.08);
+  border: 1px solid rgb(229 231 235);
+}
+
+.driver-popover-minicom .driver-popover-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: rgb(17 24 39);
+  margin-bottom: 6px;
+}
+
+.driver-popover-minicom .driver-popover-description {
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgb(107 114 128);
+}
+
+.driver-popover-minicom .driver-popover-close-btn {
+  color: rgb(156 163 175);
+  font-size: 20px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.driver-popover-minicom .driver-popover-close-btn:hover {
+  color: rgb(75 85 99);
+  background: rgb(243 244 246);
+}
+
+.driver-popover-minicom .driver-popover-footer {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgb(243 244 246);
+}
+
+.driver-popover-minicom .driver-popover-progress-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgb(156 163 175);
+}
+
+.driver-popover-minicom .driver-popover-footer button {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid rgb(229 231 235);
+  background: white;
+  color: rgb(75 85 99);
+  transition: all 0.15s ease;
+  text-shadow: none;
+}
+
+.driver-popover-minicom .driver-popover-footer button:hover:not(.driver-popover-btn-disabled) {
+  background: rgb(249 250 251);
+  border-color: rgb(209 213 219);
+}
+
+.driver-popover-minicom .driver-popover-next-btn:not(.driver-popover-btn-disabled) {
+  background: #fc6435 !important;
+  border-color: #fc6435 !important;
+  color: white !important;
+}
+
+.driver-popover-minicom .driver-popover-next-btn:hover:not(.driver-popover-btn-disabled) {
+  background: #e55a2a !important;
+  border-color: #e55a2a !important;
+  color: white !important;
+}
+
+.driver-popover-minicom .driver-popover-arrow {
+  border-color: white;
+}
+
+.driver-popover-minicom.driver-popover-arrow-side-top .driver-popover-arrow {
+  border-top-color: white;
+}
+
+.driver-popover-minicom.driver-popover-arrow-side-bottom .driver-popover-arrow {
+  border-bottom-color: white;
+}
+
+.driver-popover-minicom.driver-popover-arrow-side-left .driver-popover-arrow {
+  border-left-color: white;
+}
+
+.driver-popover-minicom.driver-popover-arrow-side-right .driver-popover-arrow {
+  border-right-color: white;
+}

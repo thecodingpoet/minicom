@@ -34,7 +34,7 @@ function AssignmentDropdown({ value, onChange }) {
   }, [open]);
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative" ref={ref} data-tour="assignment-dropdown">
       <button
         onClick={() => setOpen((o) => !o)}
         className="inline-flex items-center gap-1 text-[13px] text-gray-500 hover:text-gray-900 font-medium cursor-pointer border-none bg-transparent p-0 transition-colors"
@@ -123,7 +123,7 @@ export default function AgentDashboard() {
   return (
     <div className="flex flex-col h-full">
       <div className="shrink-0 px-5 pt-5 pb-3 flex flex-col gap-3">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between" data-tour="inbox-header">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-bold">Inbox</h2>
             <span className="text-gray-300 text-lg leading-none" aria-hidden="true">•</span>
@@ -135,7 +135,7 @@ export default function AgentDashboard() {
           <span className="text-[13px] text-gray-400 font-medium">{counts?.all ?? tickets.length}</span>
         </div>
 
-        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1">
+        <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1" data-tour="status-filters">
           {STATUS_FILTERS.map(({ value, label, dot }) => {
             const active = statusFilter === value;
             const count = countFor(value);
@@ -162,7 +162,7 @@ export default function AgentDashboard() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto border-t border-gray-100">
+      <div className="flex-1 overflow-y-auto border-t border-gray-100" data-tour="ticket-list">
         {loading ? (
           <Spinner />
         ) : error ? (

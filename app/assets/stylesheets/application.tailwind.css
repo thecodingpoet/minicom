@@ -13,3 +13,5 @@
     @apply bg-gray-50 text-gray-900 text-sm antialiased leading-relaxed;
   }
 }
+
+@import "./product-tour.css";
