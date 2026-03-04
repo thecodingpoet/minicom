@@ -16,6 +16,7 @@ export default function CustomerTicketDetail() {
 
   const { data, loading, error, refetch } = useQuery(GET_TICKET, {
     variables: { id },
+    fetchPolicy: "network-only",
   });
 
   useEffect(() => {
