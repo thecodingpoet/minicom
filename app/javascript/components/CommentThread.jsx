@@ -18,7 +18,19 @@ export default function CommentThread({ comments, ticketId, canComment, currentU
   const [body, setBody] = useState("");
 
   const [createComment, { loading }] = useMutation(CREATE_COMMENT, {
-    refetchQueries: [{ query: GET_TICKET, variables: { id: ticketId } }],
+    update(cache, { data }) {
+      if (!data?.createComment?.comment) return;
+      const newCommentRef = cache.identify(data.createComment.comment);
+      if (!newCommentRef) return;
+      cache.modify({
+        id: cache.identify({ __typename: "Ticket", id: ticketId }),
+        fields: {
+          comments(existingRefs = []) {
+            return [...existingRefs, { __ref: newCommentRef }];
+          },
+        },
+      });
+    },
   });
 
   const handleSubmit = async (e) => {

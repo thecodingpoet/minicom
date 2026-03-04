@@ -22,8 +22,11 @@ export default function CustomerTicketDetail() {
 
   useEffect(() => {
     if (!id) return;
-    return createTicketSubscription(id, () => refetch());
-  }, [id, refetch]);
+    return createTicketSubscription(id, (data) => {
+      if (data?.actor_id != null && String(data.actor_id) === String(user?.id)) return;
+      refetch();
+    });
+  }, [id, refetch, user?.id]);
 
   useEffect(() => {
     if (data?.ticket?.comments != null) {

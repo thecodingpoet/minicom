@@ -12,7 +12,7 @@ class Comment < ApplicationRecord
   private
 
   def broadcast_ticket_update
-    TicketChannel.broadcast_to(ticket, { type: "update" })
+    TicketChannel.broadcast_to(ticket, { type: "update", actor_id: user.id })
   rescue StandardError => e
     Rails.logger.error("TicketChannel broadcast failed: #{e.message}")
   end

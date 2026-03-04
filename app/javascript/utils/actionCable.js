@@ -16,7 +16,7 @@ export function createTicketSubscription(ticketId, onUpdate) {
     {
       received(data) {
         if (data.type === "update") {
-          onUpdate();
+          onUpdate(data);
         }
       },
     }

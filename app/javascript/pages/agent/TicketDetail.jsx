@@ -8,6 +8,7 @@ import Avatar from "../../components/Avatar";
 import AttachmentStrip from "../../components/AttachmentStrip";
 import Spinner from "../../components/Spinner";
 import { createTicketSubscription } from "../../utils/actionCable";
+import { useAuth } from "../../utils/auth";
 import { isAgent } from "../../constants/roles";
 
 function formatTime(dateStr) {
@@ -24,6 +25,7 @@ export default function AgentTicketDetail() {
   const navigate = useNavigate();
   const [replyBody, setReplyBody] = useState("");
   const scrollRef = useRef(null);
+  const { user } = useAuth();
 
   const { data, loading, error, refetch } = useQuery(GET_TICKET, {
     variables: { id },
@@ -32,8 +34,11 @@ export default function AgentTicketDetail() {
 
   useEffect(() => {
     if (!id) return;
-    return createTicketSubscription(id, () => refetch());
-  }, [id, refetch]);
+    return createTicketSubscription(id, (data) => {
+      if (data?.actor_id != null && String(data.actor_id) === String(user?.id)) return;
+      refetch();
+    });
+  }, [id, refetch, user?.id]);
 
   const [updateStatus] = useMutation(UPDATE_TICKET_STATUS, {
     refetchQueries: [
@@ -44,7 +49,19 @@ export default function AgentTicketDetail() {
   });
 
   const [createComment, { loading: sending }] = useMutation(CREATE_COMMENT, {
-    refetchQueries: [{ query: GET_TICKET, variables: { id } }],
+    update(cache, { data }) {
+      if (!data?.createComment?.comment) return;
+      const newCommentRef = cache.identify(data.createComment.comment);
+      if (!newCommentRef) return;
+      cache.modify({
+        id: cache.identify({ __typename: "Ticket", id }),
+        fields: {
+          comments(existingRefs = []) {
+            return [...existingRefs, { __ref: newCommentRef }];
+          },
+        },
+      });
+    },
   });
 
   useEffect(() => {
