@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@apollo/client/react";
 import { GET_TICKET } from "../../graphql/queries";
@@ -13,6 +13,7 @@ import { createTicketSubscription } from "../../utils/actionCable";
 export default function CustomerTicketDetail() {
   const { id } = useParams();
   const { user } = useAuth();
+  const commentsEndRef = useRef(null);
 
   const { data, loading, error, refetch } = useQuery(GET_TICKET, {
     variables: { id },
@@ -23,6 +24,12 @@ export default function CustomerTicketDetail() {
     if (!id) return;
     return createTicketSubscription(id, () => refetch());
   }, [id, refetch]);
+
+  useEffect(() => {
+    if (data?.ticket?.comments != null) {
+      commentsEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    }
+  }, [data?.ticket?.comments?.length]);
 
   if (loading) return <Spinner />;
   if (error) return <div className="bg-red-50 text-red-500 px-3.5 py-2.5 rounded-lg text-[13px] font-medium">{error.message}</div>;
@@ -55,12 +62,14 @@ export default function CustomerTicketDetail() {
         <AttachmentStrip attachments={ticket.attachments} />
       </div>
 
-      <CommentThread
-        comments={ticket.comments}
-        ticketId={ticket.id}
-        canComment={canComment}
-        currentUserRole={user?.role}
-      />
+      <div ref={commentsEndRef}>
+        <CommentThread
+          comments={ticket.comments}
+          ticketId={ticket.id}
+          canComment={canComment}
+          currentUserRole={user?.role}
+        />
+      </div>
     </div>
   );
 }
