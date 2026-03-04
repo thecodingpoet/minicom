@@ -10,6 +10,7 @@ import Spinner from "../../components/Spinner";
 import { createTicketSubscription } from "../../utils/actionCable";
 import { useAuth } from "../../utils/auth";
 import { isAgent } from "../../constants/roles";
+import { TICKET_STATUS } from "../../constants/ticket";
 
 function formatTime(dateStr) {
   return new Date(dateStr).toLocaleString(undefined, {
@@ -104,7 +105,7 @@ export default function AgentTicketDetail() {
   const handleMarkResolved = async () => {
     try {
       const { data } = await updateStatus({
-        variables: { ticketId: ticket.id, status: "closed" },
+        variables: { ticketId: ticket.id, status: TICKET_STATUS.CLOSED },
       });
       if (data?.updateTicketStatus?.errors?.length > 0) {
         alert(data.updateTicketStatus.errors.join(", "));
@@ -152,7 +153,7 @@ export default function AgentTicketDetail() {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <StatusPill status={ticket.status} />
-            {ticket.status !== "closed" && (
+            {ticket.status !== TICKET_STATUS.CLOSED && (
               <button
                 onClick={handleMarkResolved}
                 className="bg-accent hover:bg-accent-hover text-white font-semibold px-3 py-1.5 rounded-lg text-[13px] transition whitespace-nowrap"
@@ -221,6 +222,7 @@ export default function AgentTicketDetail() {
         </div>
       </div>
 
+      {ticket.status !== TICKET_STATUS.CLOSED && (
       <div className="shrink-0 border-t border-gray-200 bg-white px-5 py-3">
         <form onSubmit={handleSendReply} className="flex gap-2.5 items-end">
           <textarea
@@ -246,6 +248,7 @@ export default function AgentTicketDetail() {
           </button>
         </form>
       </div>
+      )}
     </div>
   );
 }

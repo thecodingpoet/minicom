@@ -4,6 +4,7 @@ class Comment < ApplicationRecord
 
   validates :body, presence: true
   validate :customer_can_comment
+  validate :ticket_not_closed
 
   after_create :claim_ticket_if_agent
   after_commit :broadcast_ticket_update, on: :create
@@ -22,6 +23,12 @@ class Comment < ApplicationRecord
     return if ticket&.has_agent_comment?
 
     errors.add(:base, "Customers cannot comment until an agent has responded")
+  end
+
+  def ticket_not_closed
+    return unless ticket&.closed?
+
+    errors.add(:base, "Cannot comment on a closed ticket")
   end
 
   def claim_ticket_if_agent

@@ -14,7 +14,7 @@ function formatTime(dateStr) {
   });
 }
 
-export default function CommentThread({ comments, ticketId, canComment, currentUserRole }) {
+export default function CommentThread({ comments, ticketId, canComment, ticketClosed, currentUserRole }) {
   const [body, setBody] = useState("");
 
   const [createComment, { loading }] = useMutation(CREATE_COMMENT, {
@@ -125,7 +125,7 @@ export default function CommentThread({ comments, ticketId, canComment, currentU
 
       {!canComment && (
         <div className="border-t border-gray-100 px-5 py-3.5 text-center text-[13px] text-gray-400 bg-gray-50">
-          Waiting for an agent to respond before you can reply.
+          {ticketClosed ? "This ticket is closed. You cannot add replies." : "Waiting for an agent to respond before you can reply."}
         </div>
       )}
     </div>

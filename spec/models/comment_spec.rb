@@ -40,6 +40,36 @@ RSpec.describe Comment, type: :model do
     end
   end
 
+  describe "ticket_not_closed validation" do
+    before do
+      allow(TicketChannel).to receive(:broadcast_to)
+    end
+
+    it "prevents customer from commenting on closed ticket" do
+      ticket = create(:ticket, :with_agent_comment)
+      ticket.update!(status: :closed)
+      customer = ticket.customer
+      comment = build(:comment, ticket: ticket, user: customer)
+      expect(comment).not_to be_valid
+      expect(comment.errors[:base]).to include("Cannot comment on a closed ticket")
+    end
+
+    it "prevents agent from commenting on closed ticket" do
+      ticket = create(:ticket, :closed)
+      agent = create(:user, :agent)
+      comment = build(:comment, ticket: ticket, user: agent)
+      expect(comment).not_to be_valid
+      expect(comment.errors[:base]).to include("Cannot comment on a closed ticket")
+    end
+
+    it "allows comments on open tickets" do
+      ticket = create(:ticket, :with_agent_comment)
+      customer = ticket.customer
+      comment = build(:comment, ticket: ticket, user: customer)
+      expect(comment).to be_valid
+    end
+  end
+
   describe "claim_ticket_if_agent callback" do
     before do
       allow(TicketChannel).to receive(:broadcast_to)
@@ -64,7 +94,7 @@ RSpec.describe Comment, type: :model do
     it "broadcasts to ticket channel on create" do
       ticket = create(:ticket, :with_agent_comment)
       customer = ticket.customer
-      expect(TicketChannel).to receive(:broadcast_to).with(ticket, { type: "update" })
+      expect(TicketChannel).to receive(:broadcast_to).with(ticket, { type: "update", actor_id: customer.id })
       create(:comment, ticket: ticket, user: customer)
     end
   end

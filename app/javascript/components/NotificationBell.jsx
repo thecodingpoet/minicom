@@ -6,6 +6,7 @@ import { MARK_NOTIFICATION_AS_READ, MARK_ALL_NOTIFICATIONS_AS_READ } from "../gr
 import { createNotificationSubscription } from "../utils/actionCable";
 import { useAuth } from "../utils/auth";
 import { isAgent } from "../constants/roles";
+import { TICKET_STATUS } from "../constants/ticket";
 
 function timeAgo(dateStr) {
   const seconds = Math.floor((Date.now() - new Date(dateStr)) / 1000);
@@ -27,7 +28,7 @@ function actionText(notification) {
     case "new_comment":
       return { name, verb: "commented on", subject };
     case "ticket_closed":
-      return { name, verb: "closed", subject };
+      return { name, verb: TICKET_STATUS.CLOSED, subject };
     default:
       return { name, verb: "updated", subject };
   }

@@ -5,12 +5,13 @@ import { GET_TICKETS, GET_TICKET_COUNTS } from "../../graphql/queries";
 import TicketCard from "../../components/TicketCard";
 import Spinner from "../../components/Spinner";
 import { createInboxSubscription } from "../../utils/actionCable";
+import { TICKET_STATUS } from "../../constants/ticket";
 
 const STATUS_FILTERS = [
   { value: "", label: "All" },
-  { value: "open", label: "Open", dot: "bg-green-500" },
-  { value: "in_progress", label: "In Progress", dot: "bg-amber-500" },
-  { value: "closed", label: "Closed", dot: "bg-gray-400" },
+  { value: TICKET_STATUS.OPEN, label: "Open", dot: "bg-green-500" },
+  { value: TICKET_STATUS.IN_PROGRESS, label: "In Progress", dot: "bg-amber-500" },
+  { value: TICKET_STATUS.CLOSED, label: "Closed", dot: "bg-gray-400" },
 ];
 
 const ASSIGNMENT_OPTIONS = [
@@ -113,9 +114,9 @@ export default function AgentDashboard() {
 
   const countFor = (value) => {
     if (!counts) return 0;
-    if (value === "open") return counts.open;
-    if (value === "in_progress") return counts.inProgress;
-    if (value === "closed") return counts.closed;
+    if (value === TICKET_STATUS.OPEN) return counts.open;
+    if (value === TICKET_STATUS.IN_PROGRESS) return counts.inProgress;
+    if (value === TICKET_STATUS.CLOSED) return counts.closed;
     return counts.all;
   };
 

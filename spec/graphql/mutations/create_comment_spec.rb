@@ -93,4 +93,45 @@ RSpec.describe Mutations::CreateComment, type: :graphql do
     expect(data["comment"]).to be_nil
     expect(data["errors"]).to include("Customers cannot comment until an agent has responded")
   end
+
+  it "returns validation errors when commenting on closed ticket" do
+    ticket = create(:ticket, :with_agent_comment)
+    ticket.update!(status: :closed)
+    customer = ticket.customer
+
+    result = execute_graphql(
+      query: mutation,
+      variables: {
+        input: {
+          ticketId: ticket.id.to_s,
+          body: "Customer reply"
+        }
+      },
+      context: { current_user: customer }
+    )
+
+    data = result["data"]["createComment"]
+    expect(data["comment"]).to be_nil
+    expect(data["errors"]).to include("Cannot comment on a closed ticket")
+  end
+
+  it "returns validation errors when agent tries to comment on closed ticket" do
+    ticket = create(:ticket, :closed)
+    agent = create(:user, :agent)
+
+    result = execute_graphql(
+      query: mutation,
+      variables: {
+        input: {
+          ticketId: ticket.id.to_s,
+          body: "Agent reply"
+        }
+      },
+      context: { current_user: agent }
+    )
+
+    data = result["data"]["createComment"]
+    expect(data["comment"]).to be_nil
+    expect(data["errors"]).to include("Cannot comment on a closed ticket")
+  end
 end

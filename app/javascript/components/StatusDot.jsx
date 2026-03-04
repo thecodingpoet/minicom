@@ -1,19 +1,21 @@
+import { TICKET_STATUS } from "../constants/ticket";
+
 const LABELS = {
-  open: "Open",
-  in_progress: "In Progress",
-  closed: "Closed",
+  [TICKET_STATUS.OPEN]: "Open",
+  [TICKET_STATUS.IN_PROGRESS]: "In Progress",
+  [TICKET_STATUS.CLOSED]: "Closed",
 };
 
 const DOT_COLORS = {
-  open: "bg-green-500",
-  in_progress: "bg-amber-500",
-  closed: "bg-gray-400",
+  [TICKET_STATUS.OPEN]: "bg-green-500",
+  [TICKET_STATUS.IN_PROGRESS]: "bg-amber-500",
+  [TICKET_STATUS.CLOSED]: "bg-gray-400",
 };
 
 const PILL_STYLES = {
-  open: "bg-green-100 text-green-800",
-  in_progress: "bg-amber-100 text-amber-800",
-  closed: "bg-gray-100 text-gray-500",
+  [TICKET_STATUS.OPEN]: "bg-green-100 text-green-800",
+  [TICKET_STATUS.IN_PROGRESS]: "bg-amber-100 text-amber-800",
+  [TICKET_STATUS.CLOSED]: "bg-gray-100 text-gray-500",
 };
 
 export function StatusDot({ status }) {

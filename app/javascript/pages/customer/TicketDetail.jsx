@@ -4,6 +4,7 @@ import { useQuery } from "@apollo/client/react";
 import { GET_TICKET } from "../../graphql/queries";
 import { useAuth } from "../../utils/auth";
 import { isAgent } from "../../constants/roles";
+import { isClosed } from "../../constants/ticket";
 import { StatusPill } from "../../components/StatusDot";
 import CommentThread from "../../components/CommentThread";
 import AttachmentStrip from "../../components/AttachmentStrip";
@@ -41,7 +42,7 @@ export default function CustomerTicketDetail() {
   if (!ticket) return <p>Ticket not found.</p>;
 
   const hasAgentComment = ticket.comments.some((c) => isAgent(c.user));
-  const canComment = isAgent(user) || hasAgentComment;
+  const canComment = !isClosed(ticket.status) && (isAgent(user) || hasAgentComment);
 
   return (
     <div className="flex flex-col gap-5">
@@ -70,6 +71,7 @@ export default function CustomerTicketDetail() {
           comments={ticket.comments}
           ticketId={ticket.id}
           canComment={canComment}
+          ticketClosed={isClosed(ticket.status)}
           currentUserRole={user?.role}
         />
       </div>
