@@ -19,7 +19,7 @@ module Mutations
       ticket = context[:current_user].tickets.build(subject: subject, description: description)
 
       if ticket.save
-        (attachments || []).each do |file|
+        attachments.each do |file|
           validate_attachment!(file)
           ticket.attachments.attach(
             io: file.tempfile,
