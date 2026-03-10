@@ -6,6 +6,8 @@ import AgentLayout from "./components/AgentLayout";
 import Spinner from "./components/Spinner";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Settings from "./pages/Settings";
 import CustomerDashboard from "./pages/customer/Dashboard";
 import CreateTicket from "./pages/customer/CreateTicket";
@@ -44,6 +46,8 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       <Route
         path="/agent"

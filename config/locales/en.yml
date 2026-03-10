@@ -29,3 +29,5 @@
 
 en:
   hello: "Hello world"
+  errors:
+    invalid_reset_token: "Invalid or expired reset link. Please request a new one."

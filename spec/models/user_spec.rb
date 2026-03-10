@@ -3,6 +3,8 @@
 require "rails_helper"
 
 RSpec.describe User, type: :model do
+  include ActiveSupport::Testing::TimeHelpers
+
   subject { create(:user) }
 
   describe "validations" do
@@ -25,6 +27,33 @@ RSpec.describe User, type: :model do
     it "returns first and last name combined" do
       user = build(:user, first_name: "Jane", last_name: "Doe")
       expect(user.full_name).to eq("Jane Doe")
+    end
+  end
+
+  describe "password reset token" do
+    it "generates a valid token" do
+      user = create(:user)
+      token = user.password_reset_token
+
+      expect(token).to be_present
+      expect(User.find_by_password_reset_token(token)).to eq(user)
+    end
+
+    it "rejects expired token" do
+      user = create(:user)
+      token = user.password_reset_token
+
+      travel 16.minutes do
+        expect(User.find_by_password_reset_token(token)).to be_nil
+      end
+    end
+
+    it "invalidates token after password change" do
+      user = create(:user)
+      token = user.password_reset_token
+
+      user.update!(password: "newpassword123", password_confirmation: "newpassword123")
+      expect(User.find_by_password_reset_token(token)).to be_nil
     end
   end
 

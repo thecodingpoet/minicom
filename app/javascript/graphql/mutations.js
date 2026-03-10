@@ -33,6 +33,32 @@ export const SIGN_UP = gql`
   }
 `;
 
+export const REQUEST_PASSWORD_RESET = gql`
+  mutation RequestPasswordReset($email: String!) {
+    requestPasswordReset(input: { email: $email }) {
+      success
+      errors
+    }
+  }
+`;
+
+export const RESET_PASSWORD = gql`
+  mutation ResetPassword($token: String!, $password: String!, $passwordConfirmation: String!) {
+    resetPassword(input: { token: $token, password: $password, passwordConfirmation: $passwordConfirmation }) {
+      token
+      user {
+        id
+        email
+        firstName
+        lastName
+        fullName
+        role
+      }
+      errors
+    }
+  }
+`;
+
 export const SIGN_IN = gql`
   mutation SignIn($email: String!, $password: String!) {
     signIn(input: { email: $email, password: $password }) {
