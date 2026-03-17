@@ -27,7 +27,6 @@ class Comment < ApplicationRecord
 
   def ticket_not_closed
     return unless ticket&.closed?
-
     errors.add(:base, "Cannot comment on a closed ticket")
   end
 
