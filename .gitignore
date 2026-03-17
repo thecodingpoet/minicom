@@ -38,3 +38,6 @@
 !/app/assets/builds/.keep
 
 /node_modules
+
+# Use yarn exclusively; ignore npm lock file to avoid mixed package manager warnings
+package-lock.json
