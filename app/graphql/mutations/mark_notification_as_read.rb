@@ -8,9 +8,9 @@ module Mutations
     field :errors, [ String ], null: false
 
     def resolve(notification_id:)
-      raise GraphQL::ExecutionError, "Authentication required" unless context[:current_user]
+      require_authentication!
 
-      notification = context[:current_user].notifications.find(notification_id)
+      notification = current_user.notifications.find(notification_id)
       notification.mark_as_read!
 
       { notification: notification, errors: [] }

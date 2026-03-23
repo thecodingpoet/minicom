@@ -7,15 +7,11 @@ module Mutations
     field :errors, [ String ], null: false
 
     def resolve(ticket_id:, body:)
-      raise GraphQL::ExecutionError, "Authentication required" unless context[:current_user]
-
+      require_authentication!
       ticket = Ticket.find(ticket_id)
+      authorize!(ticket, :comment?, message: "Not authorized to comment on this ticket", require_login: false)
 
-      if context[:current_user].customer?
-        raise GraphQL::ExecutionError, "Not authorized to comment on this ticket" unless ticket.customer_id == context[:current_user].id
-      end
-
-      comment = ticket.comments.build(body: body, user: context[:current_user])
+      comment = ticket.comments.build(body: body, user: current_user)
 
       if comment.save
         { comment: comment, errors: [] }

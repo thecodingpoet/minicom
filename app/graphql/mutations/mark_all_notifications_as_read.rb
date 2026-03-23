@@ -6,9 +6,9 @@ module Mutations
     field :errors, [ String ], null: false
 
     def resolve
-      raise GraphQL::ExecutionError, "Authentication required" unless context[:current_user]
+      require_authentication!
 
-      count = context[:current_user].notifications.unread.update_all(read_at: Time.current)
+      count = current_user.notifications.unread.update_all(read_at: Time.current)
 
       { updated_count: count, errors: [] }
     end

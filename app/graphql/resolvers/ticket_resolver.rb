@@ -13,9 +13,7 @@ module Resolvers
                     .with_attached_attachments
                     .find(id)
 
-      if current_user.customer? && ticket.customer_id != current_user.id
-        raise GraphQL::ExecutionError, "Not authorized"
-      end
+      authorize!(ticket, :show?, message: "Not authorized", require_login: false)
 
       ticket
     end

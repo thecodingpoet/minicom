@@ -6,11 +6,9 @@ module Mutations
     field :errors, [ String ], null: false
 
     def resolve
-      user = context[:current_user]
-      raise GraphQL::ExecutionError, "Authentication required" unless user
-      raise GraphQL::ExecutionError, "Only agents can export tickets" unless user.agent?
+      authorize!(TicketExport, :create?, message: "Only agents can export tickets")
 
-      export = TicketExport.create!(user: user, status: :pending)
+      export = TicketExport.create!(user: current_user, status: :pending)
       ExportClosedTicketsJob.perform_later(export.id)
 
       { ticket_export: export.reload, errors: [] }

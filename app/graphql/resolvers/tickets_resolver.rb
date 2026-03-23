@@ -10,9 +10,7 @@ module Resolvers
     argument :assignment, String, required: false
 
     def resolve(status: nil, assignment: nil)
-      require_authentication!
-
-      scope = current_user.customer? ? current_user.tickets : Ticket.all
+      scope = policy_scope(Ticket)
       scope = scope.where(status: status) if status.present?
       scope = apply_assignment_scope(scope, assignment)
 

@@ -22,6 +22,7 @@ gem "graphql"
 gem "apollo_upload_server", "~> 2.1"
 gem "mission_control-jobs"
 gem "dotenv-rails"
+gem "pundit", "~> 2.5"
 
 group :development, :test do
   gem "database_cleaner-active_record"

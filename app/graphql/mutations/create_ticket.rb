@@ -13,10 +13,9 @@ module Mutations
     field :errors, [ String ], null: false
 
     def resolve(subject:, description:, attachments: [])
-      raise GraphQL::ExecutionError, "Authentication required" unless context[:current_user]
-      raise GraphQL::ExecutionError, "Only customers can create tickets" unless context[:current_user].customer?
+      authorize!(Ticket, :create?, message: "Only customers can create tickets")
 
-      ticket = context[:current_user].tickets.build(subject: subject, description: description)
+      ticket = current_user.tickets.build(subject: subject, description: description)
 
       if ticket.save
         (attachments || []).each do |file|

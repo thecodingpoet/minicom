@@ -7,10 +7,9 @@ module Mutations
     field :errors, [ String ], null: false
 
     def resolve(ticket_id:, agent_id: nil)
-      raise GraphQL::ExecutionError, "Authentication required" unless context[:current_user]
-      raise GraphQL::ExecutionError, "Only agents can assign tickets" unless context[:current_user].agent?
-
+      require_authentication!
       ticket = Ticket.find(ticket_id)
+      authorize!(ticket, :assign?, message: "Only agents can assign tickets", require_login: false)
 
       if agent_id.present?
         agent = User.find(agent_id)

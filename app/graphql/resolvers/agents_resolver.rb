@@ -5,7 +5,7 @@ module Resolvers
     type [ Types::UserType ], null: false
 
     def resolve
-      require_agent!(message: "Only agents can list agents")
+      authorize!(current_user, :agent_access?, message: "Only agents can list agents")
       User.agent
     end
   end
