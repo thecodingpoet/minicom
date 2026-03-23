@@ -137,7 +137,12 @@ export const ASSIGN_TICKET = gql`
 export const EXPORT_CLOSED_TICKETS = gql`
   mutation ExportClosedTickets {
     exportClosedTickets(input: {}) {
-      csvData
+      ticketExport {
+        id
+        status
+        downloadUrl
+        errorMessage
+      }
       errors
     }
   }

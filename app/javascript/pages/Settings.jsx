@@ -1,9 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@apollo/client/react";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { useAuth } from "../utils/auth";
 import { isAgent } from "../constants/roles";
 import { EXPORT_CLOSED_TICKETS } from "../graphql/mutations";
+import { GET_TICKET_EXPORT } from "../graphql/queries";
 import {
   shouldRunSettingsTour,
   runAgentSettingsTour,
@@ -11,9 +12,14 @@ import {
   clearAgentTourCompleted,
 } from "../utils/agentTour";
 
+const POLL_MS = 750;
+const MAX_POLLS = 120;
+
 export default function Settings() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [pollExportId, setPollExportId] = useState(null);
+  const pollCountRef = useRef(0);
 
   useEffect(() => {
     if (isAgent(user) && shouldRunSettingsTour()) {
@@ -21,7 +27,59 @@ export default function Settings() {
       return () => clearTimeout(timer);
     }
   }, [user]);
-  const [exportTickets, { loading }] = useMutation(EXPORT_CLOSED_TICKETS);
+
+  const [exportTickets, { loading: mutationLoading }] = useMutation(EXPORT_CLOSED_TICKETS);
+
+  const { data: exportPollData, stopPolling } = useQuery(GET_TICKET_EXPORT, {
+    variables: { id: pollExportId || "" },
+    skip: !pollExportId,
+    pollInterval: pollExportId ? POLL_MS : 0,
+    fetchPolicy: "network-only",
+  });
+
+  useEffect(() => {
+    if (!pollExportId) {
+      pollCountRef.current = 0;
+      return;
+    }
+
+    const exp = exportPollData?.ticketExport;
+    if (!exp) {
+      return;
+    }
+
+    if (exp.status === "ready" && exp.downloadUrl) {
+      stopPolling();
+      setPollExportId(null);
+      pollCountRef.current = 0;
+      const a = document.createElement("a");
+      a.href = exp.downloadUrl;
+      a.download = "";
+      a.rel = "noopener noreferrer";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      return;
+    }
+
+    if (exp.status === "failed") {
+      stopPolling();
+      setPollExportId(null);
+      pollCountRef.current = 0;
+      alert(exp.errorMessage || "Export failed.");
+      return;
+    }
+
+    if (exp.status === "pending") {
+      pollCountRef.current += 1;
+      if (pollCountRef.current >= MAX_POLLS) {
+        stopPolling();
+        setPollExportId(null);
+        pollCountRef.current = 0;
+        alert("Export is taking longer than expected. Refresh the page and try again.");
+      }
+    }
+  }, [exportPollData, pollExportId, stopPolling]);
 
   const handleExport = async () => {
     try {
@@ -33,19 +91,35 @@ export default function Settings() {
         return;
       }
 
-      const blob = new Blob([result.csvData], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `closed-tickets-${new Date().toISOString().slice(0, 10)}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
+      const exportRow = result.ticketExport;
+      if (!exportRow?.id) {
+        alert("Export could not be started.");
+        return;
+      }
+
+      if (exportRow.status === "ready" && exportRow.downloadUrl) {
+        const a = document.createElement("a");
+        a.href = exportRow.downloadUrl;
+        a.download = "";
+        a.rel = "noopener noreferrer";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        return;
+      }
+
+      if (exportRow.status === "failed") {
+        alert(exportRow.errorMessage || "Export failed.");
+        return;
+      }
+
+      setPollExportId(exportRow.id);
     } catch (err) {
       alert(err.message);
     }
   };
+
+  const loading = mutationLoading || !!pollExportId;
 
   return (
     <div className="max-w-[640px]">
@@ -74,7 +148,7 @@ export default function Settings() {
                   disabled={loading}
                   className="bg-accent hover:bg-accent-hover text-white font-semibold px-4 py-2 rounded-lg text-sm transition disabled:opacity-50"
                 >
-                  {loading ? "Exporting..." : "Download CSV"}
+                  {loading ? "Preparing download…" : "Download CSV"}
                 </button>
               </div>
             </div>

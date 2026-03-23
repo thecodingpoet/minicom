@@ -101,3 +101,14 @@ export const GET_UNREAD_NOTIFICATIONS_COUNT = gql`
     unreadNotificationsCount
   }
 `;
+
+export const GET_TICKET_EXPORT = gql`
+  query GetTicketExport($id: ID!) {
+    ticketExport(id: $id) {
+      id
+      status
+      downloadUrl
+      errorMessage
+    }
+  }
+`;

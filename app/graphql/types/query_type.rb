@@ -7,5 +7,6 @@ module Types
     field :agents, resolver: Resolvers::AgentsResolver
     field :notifications, resolver: Resolvers::NotificationsResolver
     field :unread_notifications_count, resolver: Resolvers::UnreadNotificationsCountResolver
+    field :ticket_export, resolver: Resolvers::TicketExportResolver
   end
 end

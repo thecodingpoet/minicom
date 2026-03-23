@@ -7,14 +7,19 @@ RSpec.describe Mutations::ExportClosedTickets, type: :graphql do
     <<~GQL
       mutation ExportClosedTickets {
         exportClosedTickets(input: {}) {
-          csvData
+          ticketExport {
+            id
+            status
+            downloadUrl
+            errorMessage
+          }
           errors
         }
       }
     GQL
   end
 
-  it "returns CSV data when authenticated as agent" do
+  it "creates an export with download URL when authenticated as agent" do
     agent = create(:user, :agent)
     ticket = create(:ticket, :closed, customer: create(:user))
 
@@ -26,12 +31,21 @@ RSpec.describe Mutations::ExportClosedTickets, type: :graphql do
 
     expect(result["errors"]).to be_nil
     data = result["data"]["exportClosedTickets"]
-    expect(data["csvData"]).to be_present
-    expect(data["csvData"]).to include("Ticket ID")
-    expect(data["csvData"]).to include("Subject")
-    expect(data["csvData"]).to include("Customer Email")
-    expect(data["csvData"]).to include(ticket.subject)
     expect(data["errors"]).to eq([])
+
+    export_payload = data["ticketExport"]
+    expect(export_payload["status"]).to eq("ready")
+    expect(export_payload["downloadUrl"]).to be_present
+    expect(export_payload["errorMessage"]).to be_nil
+
+    export = TicketExport.find(export_payload["id"])
+    expect(export.user_id).to eq(agent.id)
+    expect(export).to be_ready
+    expect(export.file).to be_attached
+
+    csv = CSV.parse(export.file.download, headers: true)
+    expect(csv.headers).to include("Ticket ID", "Subject", "Customer Email")
+    expect(csv.map { |row| row["Ticket ID"].to_i }).to include(ticket.id)
   end
 
   it "raises when unauthenticated" do
@@ -71,7 +85,8 @@ RSpec.describe Mutations::ExportClosedTickets, type: :graphql do
     )
 
     data = result["data"]["exportClosedTickets"]
-    csv = CSV.parse(data["csvData"], headers: true)
+    export = TicketExport.find(data["ticketExport"]["id"])
+    csv = CSV.parse(export.file.download, headers: true)
     ticket_ids = csv.map { |row| row["Ticket ID"].to_i }
 
     expect(ticket_ids).to include(recent_ticket.id)
