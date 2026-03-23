@@ -3,6 +3,10 @@ development:
     class: DailyTicketReminderJob
     queue: default
     schedule: "30 10 * * 1-5 Africa/Lagos"
+  purge_old_ticket_exports:
+    class: PurgeOldTicketExportsJob
+    queue: default
+    schedule: every day at 3am
 
 production:
   daily_ticket_reminder:
@@ -12,3 +16,7 @@ production:
   clear_solid_queue_finished_jobs:
     command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
     schedule: every hour at minute 12
+  purge_old_ticket_exports:
+    class: PurgeOldTicketExportsJob
+    queue: default
+    schedule: every day at 3am
