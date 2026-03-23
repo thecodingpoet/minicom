@@ -3,6 +3,7 @@
 module Mutations
   class BaseMutation < GraphQL::Schema::RelayClassicMutation
     include PunditHelpers
+    include GraphqlAuthentication
 
     argument_class Types::BaseArgument
     field_class Types::BaseField

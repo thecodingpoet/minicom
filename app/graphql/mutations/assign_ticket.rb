@@ -7,9 +7,8 @@ module Mutations
     field :errors, [ String ], null: false
 
     def resolve(ticket_id:, agent_id: nil)
-      require_authentication!
       ticket = Ticket.find(ticket_id)
-      authorize!(ticket, :assign?, message: "Only agents can assign tickets", require_login: false)
+      authorize!(ticket, :assign?, message: "Only agents can assign tickets")
 
       if agent_id.present?
         agent = User.find(agent_id)

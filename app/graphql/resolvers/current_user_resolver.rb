@@ -2,6 +2,8 @@
 
 module Resolvers
   class CurrentUserResolver < Resolvers::BaseResolver
+    skip_authentication!
+
     type Types::UserType, null: true
 
     def resolve

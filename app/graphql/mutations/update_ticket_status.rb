@@ -9,10 +9,10 @@ module Mutations
     VALID_STATUSES = %w[open in_progress closed].freeze
 
     def resolve(ticket_id:, status:)
-      require_authentication!
       raise GraphQL::ExecutionError, "Invalid status: #{status}" unless status.in?(VALID_STATUSES)
+
       ticket = Ticket.find(ticket_id)
-      authorize!(ticket, :update_status?, message: "Only agents can update ticket status", require_login: false)
+      authorize!(ticket, :update_status?, message: "Only agents can update ticket status")
       raise GraphQL::ExecutionError, "Closed tickets cannot be reopened" if ticket.closed?
 
       updates = { status: status }

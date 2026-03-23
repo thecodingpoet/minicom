@@ -7,13 +7,11 @@ module Resolvers
     argument :id, ID, required: true
 
     def resolve(id:)
-      require_authentication!
-
       ticket = Ticket.includes(:customer, :assigned_agent, comments: :user)
                     .with_attached_attachments
                     .find(id)
 
-      authorize!(ticket, :show?, message: "Not authorized", require_login: false)
+      authorize!(ticket, :show?, message: "Not authorized")
 
       ticket
     end

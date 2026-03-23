@@ -6,8 +6,6 @@ module Mutations
     field :errors, [ String ], null: false
 
     def resolve
-      require_authentication!
-
       count = current_user.notifications.unread.update_all(read_at: Time.current)
 
       { updated_count: count, errors: [] }

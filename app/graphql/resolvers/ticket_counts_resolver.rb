@@ -9,7 +9,6 @@ module Resolvers
     argument :assignment, String, required: false
 
     def resolve(assignment: nil)
-      require_authentication!
       return { open: 0, in_progress: 0, closed: 0, all: 0 } if current_user.customer?
 
       scope = Ticket.all

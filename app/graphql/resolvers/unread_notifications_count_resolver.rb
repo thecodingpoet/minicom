@@ -5,7 +5,6 @@ module Resolvers
     type Integer, null: false
 
     def resolve
-      require_authentication!
       current_user.notifications.unread.count
     end
   end

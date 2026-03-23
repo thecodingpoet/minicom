@@ -1,5 +1,6 @@
 module Mutations
   class SignIn < BaseMutation
+    skip_authentication!
     argument :email, String, required: true
     argument :password, String, required: true
 

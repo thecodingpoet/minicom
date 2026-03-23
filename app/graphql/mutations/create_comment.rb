@@ -7,9 +7,8 @@ module Mutations
     field :errors, [ String ], null: false
 
     def resolve(ticket_id:, body:)
-      require_authentication!
       ticket = Ticket.find(ticket_id)
-      authorize!(ticket, :comment?, message: "Not authorized to comment on this ticket", require_login: false)
+      authorize!(ticket, :comment?, message: "Not authorized to comment on this ticket")
 
       comment = ticket.comments.build(body: body, user: current_user)
 

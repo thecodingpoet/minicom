@@ -8,8 +8,6 @@ module Mutations
     field :errors, [ String ], null: false
 
     def resolve(notification_id:)
-      require_authentication!
-
       notification = current_user.notifications.find(notification_id)
       notification.mark_as_read!
 

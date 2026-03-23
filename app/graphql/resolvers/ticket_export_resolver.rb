@@ -7,7 +7,6 @@ module Resolvers
     argument :id, ID, required: true
 
     def resolve(id:)
-      require_authentication!
       current_user.ticket_exports.find_by(id: id)
     end
   end

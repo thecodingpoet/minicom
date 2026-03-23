@@ -1,5 +1,6 @@
 module Mutations
   class RequestPasswordReset < BaseMutation
+    skip_authentication!
     argument :email, String, required: true
 
     field :success, Boolean, null: false

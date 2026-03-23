@@ -1,5 +1,6 @@
 module Mutations
   class ResetPassword < BaseMutation
+    skip_authentication!
     argument :token, String, required: true
     argument :password, String, required: true
     argument :password_confirmation, String, required: true
