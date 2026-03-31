@@ -16,7 +16,7 @@ gem "kamal", require: false
 gem "thruster", require: false
 
 gem "csv"
-gem "bcrypt", "~> 3.1.7"
+gem "bcrypt", "~> 3.1.22"
 gem "jwt"
 gem "graphql"
 gem "apollo_upload_server", "~> 2.1"
